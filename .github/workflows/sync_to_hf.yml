@@ -9,13 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Sync to Hugging Face Space
         uses: huggingface/hub-sync@v0.1.0
         with:
           github_repo_id: ${{ github.repository }}
-          huggingface_repo_id: mahinshahriar30/aegismed-backend  # Replace with your actual HF Space ID (username/space-name)
+          huggingface_repo_id: mahinshahriar30/aegismed-ai-engine
           hf_token: ${{ secrets.HF_TOKEN }}
+          repo_type: space
           space_sdk: docker
