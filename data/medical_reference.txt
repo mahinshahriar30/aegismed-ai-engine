@@ -1,0 +1,63 @@
+================================================================================
+AEGISMED AI - COMPREHENSIVE EMERGENCY MEDICAL REFERENCE & TRIAGE GUIDELINES
+================================================================================
+
+[DIAGNOSTIC_REF: ACUTE_CEREBROVASCULAR_ACCIDENT_STROKE]
+- Diagnostic Criteria: Sudden focal neurological deficits (FAST criteria: Facial drooping, Arm weakness, Slurred speech/Dysarthria), sudden loss of consciousness, hemiplegia, severe sudden "thunderclap" headache, or severe hypertension (BP > 180/120 mmHg).
+- Primary Diagnosis: Acute Cerebrovascular Accident (Acute Ischemic Stroke or Hemorrhagic Stroke).
+- Urgency: CRITICAL_EMERGENCY. Requires immediate non-contrast head CT scan to differentiate ischemic vs hemorrhagic stroke, blood glucose check, and thrombolytic assessment (rtPA window < 4.5 hours).
+
+[DIAGNOSTIC_REF: ACUTE_CORONARY_SYNDROME_AND_MI]
+- Diagnostic Criteria: Cardiac Troponin I (Trop-I) >= 0.04 ng/mL or Troponin T >= 0.014 ng/mL combined with central chest pain, radiating left arm/jaw pain, pressure, diaphoretic sweating, or dyspnea.
+- Primary Diagnosis: Acute Myocardial Infarction (AMI / Heart Attack) or Acute Coronary Syndrome (ACS).
+- Urgency: CRITICAL_EMERGENCY. Requires immediate 12-lead ECG, antiplatelet therapy, and emergency cath lab/PCI referral.
+
+[DIAGNOSTIC_REF: ACUTE_PULMONARY_EMBOLISM_PE]
+- Diagnostic Criteria: Sudden onset shortness of breath (dyspnea), sharp pleuritic chest pain, tachycardia (HR > 100 bpm), hypoxia (SpO2 < 90%), elevated D-Dimer (> 0.5 mg/L), or deep vein thrombosis (DVT) symptoms.
+- Primary Diagnosis: Acute Pulmonary Embolism (PE).
+- Urgency: CRITICAL_EMERGENCY. Requires immediate oxygenation, CT Pulmonary Angiogram (CTPA), and therapeutic anticoagulation.
+
+[DIAGNOSTIC_REF: SEPSIS_AND_SEPTIC_SHOCK]
+- Diagnostic Criteria: Fever > 38°C or hypothermia < 36°C, WBC > 12,000 or < 4,000 /cu.mm, HR > 90 bpm combined with Serum Lactate > 2.0 mmol/L or hypotension (SBP < 90 mmHg).
+- Primary Diagnosis: Severe Sepsis / Septic Shock.
+- Urgency: CRITICAL_EMERGENCY. Requires immediate broad-spectrum IV antibiotics, blood cultures, and fluid resuscitation.
+
+[DIAGNOSTIC_REF: DIABETIC_KETOACIDOSIS_DKA_AND_HHS]
+- Diagnostic Criteria: Blood Glucose > 250 mg/dL (13.9 mmol/L) combined with Urine/Serum Ketones POSITIVE, low Serum Bicarbonate (< 18 mEq/L), arterial pH < 7.30, or Kussmaul deep breathing.
+- Primary Diagnosis: Diabetic Ketoacidosis (DKA) or Hyperosmolar Hyperglycemic State (HHS).
+- Urgency: CRITICAL_EMERGENCY. Requires immediate IV fluid resuscitation, regular insulin infusion, and electrolyte management.
+
+[DIAGNOSTIC_REF: DENGUE_HEMORRHAGIC_FEVER_DHF]
+- Diagnostic Criteria: Dengue NS1 POSITIVE or Dengue IgM POSITIVE combined with Platelet Count < 100,000 /cu.mm (Critical if < 50,000 /cu.mm), hematocrit rise >= 20%, or severe abdominal pain.
+- Primary Diagnosis: Dengue Hemorrhagic Fever (DHF) / Severe Dengue.
+- Urgency: CRITICAL_EMERGENCY. Requires serial blood count monitoring and strict fluid balance management.
+
+[DIAGNOSTIC_REF: ACUTE_RENAL_FAILURE_AKI]
+- Diagnostic Criteria: Rapid rise in Serum Creatinine (> 1.5 mg/dL) and BUN (> 20 mg/dL) combined with oliguria (< 0.5 mL/kg/hr) or hyperkalemia (Potassium > 5.5 mEq/L).
+- Primary Diagnosis: Acute Kidney Injury (AKI) / Acute Renal Failure.
+- Urgency: HIGH_PRIORITY. Requires urgent nephrology assessment and hyperkalemia protocol.
+
+[DIAGNOSTIC_REF: ACUTE_PANCREATITIS]
+- Diagnostic Criteria: Serum Lipase or Amylase >= 3x upper limit of normal (Lipase > 180 U/L) combined with severe epigastric abdominal pain radiating to the back and nausea/vomiting.
+- Primary Diagnosis: Acute Pancreatitis.
+- Urgency: HIGH_PRIORITY. Requires IV fluid resuscitation, analgesia, and bowel rest.
+
+[DIAGNOSTIC_REF: ORGANOPHOSPHATE_POISONING_TOXICOLOGY]
+- Diagnostic Criteria: History of pesticide exposure/ingestion combined with cholinergic crisis symptoms (DUMBBELSS: Diarrhea, Urination, Miosis/pinpoint pupils, Bradycardia, Bronchospasm, Emesis, Lacrimation, Salivation) or low Serum Cholinesterase levels.
+- Primary Diagnosis: Acute Organophosphate Insecticide Toxicity.
+- Urgency: CRITICAL_EMERGENCY. Requires immediate decontamination, Atropine administration, and Pralidoxime (2-PAM).
+
+[DIAGNOSTIC_REF: PARACETAMOL_ACETAMINOPHEN_OVERDOSE]
+- Diagnostic Criteria: Ingestion of > 7.5g to 10g Paracetamol, toxic 4-hour serum paracetamol levels on the Rumack-Matthew nomogram, accompanied by severe ALT/AST elevation (> 1,000 U/L) and acute liver injury.
+- Primary Diagnosis: Acute Paracetamol Overdose / Hepatotoxicity.
+- Urgency: CRITICAL_EMERGENCY. Requires immediate N-Acetylcysteine (NAC) antidote protocol.
+
+[DIAGNOSTIC_REF: SNAKEBITE_ENVENOMATION]
+- Diagnostic Criteria: History of snakebite with local tissue swelling, neurotoxicity (ptosis, dysphagia, respiratory paralysis) or hemotoxicity (prolonged 20-minute Whole Blood Clotting Test / 20WBCT, active mucosal bleeding).
+- Primary Diagnosis: Acute Snakebite Envenomation (Neurotoxic or Hemotoxic).
+- Urgency: CRITICAL_EMERGENCY. Requires immediate Polyvalent Antivenom (AVS) administration and airway management.
+
+[DIAGNOSTIC_REF: BENZODIAZEPINE_OVERDOSE_AND_TOXICITY]
+- Diagnostic Criteria: Ingestion of benzodiazepines (Diazepam, Lorazepam, Alprazolam, Midazolam) with CNS depression, respiratory depression (RR < 10/min, hypoxia SpO2 < 90%), severe coma/unresponsiveness, or co-ingestion with alcohol/opioids.
+- Primary Diagnosis: Acute Benzodiazepine Overdose / Sedative-Hypotonic Toxicity.
+- Urgency: CRITICAL_EMERGENCY. Requires airway protection, oxygenation, continuous monitoring, and cautious consideration of Flumazenil (avoid in chronic users/seizure risk).

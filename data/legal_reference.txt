@@ -1,0 +1,11 @@
+[SECTION: LEASE_TERMINATION]
+According to Standard Housing Regulations (Section 401), a tenant may terminate a lease agreement with 30 days written notice without penalty if the landlord fails to maintain habitable living conditions. Early termination penalties cannot exceed one month's rent.
+
+[SECTION: MANDATORY_FEES]
+Under Housing Code § 402, non-refundable cleaning or maintenance fees charged monthly are illegal unless explicitly itemized and capped at $50 per month. Landlords cannot force tenants to pay for pre-existing property wear and tear.
+
+[SECTION: SECURITY_DEPOSIT]
+Security deposits must be returned within 21 days of lease termination along with an itemized statement of deductions. Landlords are prohibited from withholding deposits for cosmetic upgrades or standard carpet cleaning.
+
+[SECTION: INDEMNIFICATION_AND_LIABILITY]
+Clauses forcing tenants to indemnify landlords against landlord negligence or property structural damage are void and legally unenforceable.
