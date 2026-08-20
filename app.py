@@ -4,7 +4,7 @@ import streamlit as st
 
 # Set page configuration
 st.set_page_config(
-    page_title="AegisMed AI - Emergency Clinical Decision Support",
+    page_title="HouseMd AI - Emergency Clinical Decision Support",
     page_icon="🏥",
     layout="wide"
 )
@@ -12,7 +12,7 @@ st.set_page_config(
 # -----------------------------------------------------------------------------
 # PROMINENT DISCLAIMER BANNER
 # -----------------------------------------------------------------------------
-st.title("🏥 AegisMed AI Engine")
+st.title("🏥 HouseMd AI Engine")
 st.caption("Proof-of-Concept Emergency Triage & Diagnostic Decision Support Engine")
 
 st.error("""

@@ -2,7 +2,7 @@ import os
 from src.engine import diagnose_patient
 
 def run_medical_test():
-    print("🚀 Initializing AegisMed AI Engine Medical Test...")
+    print("🚀 Initializing HouseMd AI Engine Medical Test...")
 
     sample_medical = """
     PATIENT LAB REPORT:
