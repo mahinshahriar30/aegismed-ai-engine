@@ -22,4 +22,5 @@ COPY --chown=user . $HOME/app
 EXPOSE 7860
 
 # Command to launch the FastAPI server on port 7860
-CMD ["uvicorn", "src.api:app", "--host", "0.0.0.0", "--port", "7860"]
+# Tells uvicorn to use Render's dynamic PORT variable, defaulting to 10000 if not set
+CMD ["sh", "-c", "uvicorn src.api:app --host 0.0.0.0 --port ${PORT:-10000}"]
