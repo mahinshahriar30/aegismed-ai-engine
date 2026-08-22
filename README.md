@@ -1,5 +1,4 @@
 
-```markdown
 # AegisMed AI Engine
 
 Enterprise AI medical engine specialized in high-precision clinical diagnosis, emergency triage, and deterministic RAG execution.
