@@ -1,13 +1,12 @@
+# HouseMD 
 
-# AegisMed AI Engine
-
-Enterprise AI medical engine specialized in high-precision clinical diagnosis, emergency triage, and deterministic RAG execution.
+AI medical engine specialized in high-precision clinical diagnosis, emergency triage, and deterministic RAG execution.
 
 ## Overview
 
-AegisMed AI Engine is an enterprise-grade, deterministic Retrieval-Augmented Generation (RAG) microservice built with FastAPI, ChromaDB, and the Google GenAI SDK. Designed for high-stress healthcare environments—such as emergency departments, ICU corridor-clearing systems, and rural diagnostic centers—the engine automates the evaluation of unstructured medical presentation notes, emergency triage reports, and clinical lab findings.
+HouseMD is an enterprise-grade, deterministic Retrieval-Augmented Generation (RAG) microservice built with FastAPI, ChromaDB, and the Google GenAI SDK. Designed for high-stress healthcare environments—such as emergency departments, ICU corridor-clearing systems, and rural diagnostic centers—the engine automates the evaluation of unstructured medical presentation notes, emergency triage reports, and clinical lab findings.
 
-To eliminate the key operational risks of clinical AI, AegisMed incorporates three core design principles:
+To eliminate the key operational risks of clinical AI, HouseMD incorporates three core design principles:
 
 - **Deterministic Vector Grounding:** Cross-references incoming clinical cases against an indexed ChromaDB knowledge base of emergency protocols (e.g., FAST stroke criteria, cardiac troponin thresholds, and DUMBBELSS toxicology profiles).
 - **10-Model Resilient Failover Cascade:** Automatically switches across a 10-model fallback sequence (`gemini-2.5-flash`, `gemini-3.6-flash`, `gemini-2.5-pro`, etc.) to survive rate limits and API outages seamlessly.
@@ -39,7 +38,7 @@ Access API documentation at `http://YOUR_IP:8000/docs`
 
 ### GET /health
 
-Returns `{"status": "ok", "system": "AegisMed Engine Operational"}`
+Returns `{"status": "ok", "system": "HouseMD Engine Operational"}`
 
 ### POST /api/v1/diagnose
 
@@ -94,7 +93,7 @@ PORT=8000
 ## Project Structure
 
 ```
-aegismed-ai-engine/
+housemd/
 ├── .github/
 │   └── workflows/
 │       └── sync_to_hf.yml      # CI/CD Hugging Face deployment pipeline
@@ -138,7 +137,7 @@ tail -f server.log
 
 ## License
 
-Copyright (c) 2026 AegisMed AI Engine Team. All rights reserved.
+Copyright (c) 2026 HouseMD Team. All rights reserved.
 
 ```
 
