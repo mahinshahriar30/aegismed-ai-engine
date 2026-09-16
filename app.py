@@ -27,8 +27,11 @@ st.markdown("---")
 # -----------------------------------------------------------------------------
 # BACKEND URL CONFIGURATION
 # -----------------------------------------------------------------------------
-BACKEND_URL = os.getenv("BACKEND_URL", "http://127.0.0.1:8000")
-
+# Reads from Streamlit secrets, environment variables, or defaults to local server
+BACKEND_URL = st.secrets.get(
+    "BACKEND_URL", 
+    os.getenv("BACKEND_URL", "https://aegismed-ai-engine-3.onrender.com")
+)
 # -----------------------------------------------------------------------------
 # SIDEBAR - PRE-LOADED CLINICAL SCENARIOS
 # -----------------------------------------------------------------------------
