@@ -75,7 +75,7 @@ if st.button("🚀 Analyze & Generate Clinical Audit", type="primary"):
                 response = requests.post(
                     f"{BACKEND_URL}/api/v1/diagnose",
                     json={"document_text": document_text, "domain": "medical"},
-                    timeout=30
+                    timeout=90
                 )
                 
                 if response.status_code == 200:

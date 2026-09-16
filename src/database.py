@@ -1,6 +1,8 @@
 import os
 import chromadb
-from chromadb.utils import embedding_functions
+from chromadb import EmbeddingFunction, Documents, Embeddings
+from google import genai
+from google.genai import types
 
 # Set path for local ChromaDB vector store
 DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "chroma_db")
@@ -8,10 +10,40 @@ DATA_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "me
 
 client = chromadb.PersistentClient(path=DB_PATH)
 
-# SentenceTransformer embedding function handles model loading cleanly
-embedding_func = embedding_functions.SentenceTransformerEmbeddingFunction(
-    model_name="all-MiniLM-L6-v2"
-)
+class GoogleGenAIEmbeddingFunction(EmbeddingFunction[Documents]):
+    """Wrapper to connect ChromaDB to Google GenAI embedding API."""
+    def __init__(self, model_name: str = "gemini-embedding-001"):
+        self.api_key = os.getenv("GEMINI_API_KEY")
+        if not self.api_key:
+            raise ValueError("GEMINI_API_KEY environment variable is required for embeddings.")
+        # Target v1 API version to avoid v1beta model resolution errors
+        self.client = genai.Client(
+            api_key=self.api_key,
+            http_options=types.HttpOptions(api_version="v1")
+        )
+        self.model_name = model_name
+
+    def name(self) -> str:
+        return f"google_genai_{self.model_name.replace('-', '_')}"
+
+    def __call__(self, input: Documents) -> Embeddings:
+        embeddings = []
+        batch_size = 16  # Chunk into safe batch sizes
+        input_list = list(input)
+        
+        for i in range(0, len(input_list), batch_size):
+            batch = input_list[i:i + batch_size]
+            response = self.client.models.embed_content(
+                model=self.model_name,
+                contents=batch,
+            )
+            for e in response.embeddings:
+                embeddings.append(e.values)
+                    
+        return embeddings
+
+# Initialize embedding function
+embedding_func = GoogleGenAIEmbeddingFunction()
 
 def get_or_create_collection():
     """Returns or creates the AegisMed medical vector collection."""
@@ -26,7 +58,6 @@ def initialize_medical_kb():
     """
     collection = get_or_create_collection()
     
-    # Avoid re-indexing if collection is already populated
     if collection.count() > 0:
         print(f"📦 Vector Store active ({collection.count()} reference guidelines indexed).")
         return
