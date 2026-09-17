@@ -5,8 +5,11 @@ import httpx
 from fastapi import FastAPI, HTTPException, Security, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import APIKeyHeader
+from pydantic import BaseModel
+
+# Imports matching your exact codebase
 from src.engine import diagnose_patient
-from src.schema import AuditRequest, AegisMedAuditResponse
+from src.schema import AegisMedAuditResponse
 
 # 1. Configuration & Security Setup
 API_KEY_NAME = "X-API-Key"
@@ -16,9 +19,13 @@ EXPECTED_API_KEY = os.getenv("AEGIS_API_KEY", "aegismed_secure_key_2026")
 RENDER_EXTERNAL_URL = os.getenv("RENDER_EXTERNAL_URL", "")
 
 
+class DiagnoseRequest(BaseModel):
+  document_text: str
+
+
 async def keep_alive_loop():
-  """Background task to ping /health every 10 minutes to keep Render instance warm."""
-  await asyncio.sleep(30)  # Initial delay before starting heartbeat
+  """Background task to ping /health every 10 minutes to prevent Render free-tier sleeping."""
+  await asyncio.sleep(30)  # Initial wait before starting heartbeat
 
   async with httpx.AsyncClient() as client:
     while True:
@@ -44,7 +51,7 @@ async def lifespan(app: FastAPI):
   """Application lifecycle manager to initialize background keep-alive loop."""
   print("Starting AegisMed AI Engine microservice...")
 
-  # Start keep-alive loop in background
+  # Start background keep-alive task
   keep_alive_task = asyncio.create_task(keep_alive_loop())
 
   yield
@@ -102,7 +109,7 @@ async def health_check():
     response_model=AegisMedAuditResponse,
     status_code=status.HTTP_200_OK,
 )
-async def analyze_clinical_presentation(request: AuditRequest):
+async def analyze_clinical_presentation(request: DiagnoseRequest):
   """Primary endpoint to execute clinical triage against ChromaDB RAG guidelines."""
   try:
     audit_result = diagnose_patient(document_text=request.document_text)
