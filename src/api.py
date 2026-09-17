@@ -5,7 +5,7 @@ import httpx
 from fastapi import FastAPI, HTTPException, Security, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import APIKeyHeader
-from src.engine import AegisMedEngine
+from src.engine import diagnose_patient
 from src.schema import AegisMedAuditRequest, AegisMedAuditResponse
 
 # 1. Configuration & Security Setup
@@ -17,7 +17,7 @@ RENDER_EXTERNAL_URL = os.getenv("RENDER_EXTERNAL_URL", "")
 
 
 async def keep_alive_loop():
-  """Background task to ping /health every 10 minutes to prevent Render free-tier sleep."""
+  """Background task to ping /health every 10 minutes to keep Render instance warm."""
   await asyncio.sleep(30)  # Initial wait before starting heartbeat
 
   async with httpx.AsyncClient() as client:
@@ -36,18 +36,15 @@ async def keep_alive_loop():
       except Exception as e:
         print(f"[Keep-Alive] Heartbeat ping failed: {e}")
 
-      await asyncio.sleep(600)  # Ping every 10 minutes (600s)
+      await asyncio.sleep(600)  # Ping every 10 minutes
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-  """Application lifecycle manager to initialize reasoning engine and keep-alive loop."""
+  """Application lifecycle manager to initialize background keep-alive loop."""
   print("Starting AegisMed AI Engine microservice...")
 
-  # Instantiate core engine (handles VectorStoreManager internally)
-  app.state.engine = AegisMedEngine()
-
-  # Start background keep-alive loop
+  # Start keep-alive loop in background
   keep_alive_task = asyncio.create_task(keep_alive_loop())
 
   yield
@@ -108,10 +105,7 @@ async def health_check():
 async def analyze_clinical_presentation(request: AegisMedAuditRequest):
   """Primary endpoint to execute clinical triage against ChromaDB RAG guidelines."""
   try:
-    engine: AegisMedEngine = app.state.engine
-    audit_result = engine.audit_document(
-        document_text=request.document_text, domain=request.domain
-    )
+    audit_result = diagnose_patient(document_text=request.document_text)
     return audit_result
   except Exception as e:
     raise HTTPException(
