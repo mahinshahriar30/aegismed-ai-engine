@@ -6,7 +6,7 @@ from fastapi import FastAPI, HTTPException, Security, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import APIKeyHeader
 from src.engine import diagnose_patient
-from src.schema import AegisMedAuditRequest, AegisMedAuditResponse
+from src.schema import AuditRequest, AegisMedAuditResponse
 
 # 1. Configuration & Security Setup
 API_KEY_NAME = "X-API-Key"
@@ -18,7 +18,7 @@ RENDER_EXTERNAL_URL = os.getenv("RENDER_EXTERNAL_URL", "")
 
 async def keep_alive_loop():
   """Background task to ping /health every 10 minutes to keep Render instance warm."""
-  await asyncio.sleep(30)  # Initial wait before starting heartbeat
+  await asyncio.sleep(30)  # Initial delay before starting heartbeat
 
   async with httpx.AsyncClient() as client:
     while True:
@@ -102,7 +102,7 @@ async def health_check():
     response_model=AegisMedAuditResponse,
     status_code=status.HTTP_200_OK,
 )
-async def analyze_clinical_presentation(request: AegisMedAuditRequest):
+async def analyze_clinical_presentation(request: AuditRequest):
   """Primary endpoint to execute clinical triage against ChromaDB RAG guidelines."""
   try:
     audit_result = diagnose_patient(document_text=request.document_text)
