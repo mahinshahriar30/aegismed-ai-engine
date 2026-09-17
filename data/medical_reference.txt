@@ -3,61 +3,362 @@ AEGISMED AI - COMPREHENSIVE EMERGENCY MEDICAL REFERENCE & TRIAGE GUIDELINES
 ================================================================================
 
 [DIAGNOSTIC_REF: ACUTE_CEREBROVASCULAR_ACCIDENT_STROKE]
-- Diagnostic Criteria: Sudden focal neurological deficits (FAST criteria: Facial drooping, Arm weakness, Slurred speech/Dysarthria), sudden loss of consciousness, hemiplegia, severe sudden "thunderclap" headache, or severe hypertension (BP > 180/120 mmHg).
+- Diagnostic Criteria: Sudden focal neurological deficits (FAST: Facial drooping, Arm weakness, Slurred speech/Dysarthria), loss of consciousness, hemiplegia, severe sudden "thunderclap" headache, or severe hypertension (BP > 180/120 mmHg).
 - Primary Diagnosis: Acute Cerebrovascular Accident (Acute Ischemic Stroke or Hemorrhagic Stroke).
-- Urgency: CRITICAL_EMERGENCY. Requires immediate non-contrast head CT scan to differentiate ischemic vs hemorrhagic stroke, blood glucose check, and thrombolytic assessment (rtPA window < 4.5 hours).
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Airway & Oxygenation: Maintain SpO2 > 94%; establish IV access; perform immediate blood glucose check to rule out hypoglycemia.
+  2. Urgent Imaging: Order non-contrast head CT scan immediately to differentiate ischemic vs. hemorrhagic stroke.
+  3. Thrombolysis / Intervention: Assess eligibility for IV rtPA / Alteplase if onset < 4.5 hours and CT rules out hemorrhage; evaluate for endovascular thrombectomy if large vessel occlusion is present.
+  4. Blood Pressure Control: Labetalol or Nicardipine IV to keep BP < 185/110 mmHg prior to thrombolysis.
 
 [DIAGNOSTIC_REF: ACUTE_CORONARY_SYNDROME_AND_MI]
-- Diagnostic Criteria: Cardiac Troponin I (Trop-I) >= 0.04 ng/mL or Troponin T >= 0.014 ng/mL combined with central chest pain, radiating left arm/jaw pain, pressure, diaphoretic sweating, or dyspnea.
-- Primary Diagnosis: Acute Myocardial Infarction (AMI / Heart Attack) or Acute Coronary Syndrome (ACS).
-- Urgency: CRITICAL_EMERGENCY. Requires immediate 12-lead ECG, antiplatelet therapy, and emergency cath lab/PCI referral.
+- Diagnostic Criteria: Cardiac Troponin I (Trop-I) >= 0.04 ng/mL or Troponin T >= 0.014 ng/mL combined with central retrosternal chest pain, radiating left arm/jaw pain, pressure, diaphoretic sweating, or dyspnea.
+- Primary Diagnosis: Acute Myocardial Infarction (AMI / STEMI / NSTEMI) or Acute Coronary Syndrome (ACS).
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Initial Stabilization: Perform 12-lead ECG within 10 minutes; administer High-Flow Oxygen if SpO2 < 90%.
+  2. Dual Antiplatelet Therapy: Aspirin 300 mg chewable immediately + Clopidogrel 300-600 mg or Ticagrelor 180 mg orally.
+  3. Pain & Ischemia Management: Sublingual Nitroglycerin (0.4 mg) every 5 minutes (up to 3 doses) if SBP > 90 mmHg; Morphine IV for refractory pain. Anticoagulation with Unfractionated Heparin or Enoxaparin.
+  4. Reperfusion Strategy: Activate Cath Lab for Emergency Primary PCI within 90 minutes; if PCI unavailable and STEMI < 12h, administer Thrombolytic (e.g., Tenecteplase/Streptokinase).
 
 [DIAGNOSTIC_REF: ACUTE_PULMONARY_EMBOLISM_PE]
-- Diagnostic Criteria: Sudden onset shortness of breath (dyspnea), sharp pleuritic chest pain, tachycardia (HR > 100 bpm), hypoxia (SpO2 < 90%), elevated D-Dimer (> 0.5 mg/L), or deep vein thrombosis (DVT) symptoms.
+- Diagnostic Criteria: Sudden onset dyspnea, sharp pleuritic chest pain, tachycardia (HR > 100 bpm), hypoxia (SpO2 < 90%), elevated D-Dimer (> 0.5 mg/L), deep vein thrombosis (DVT) symptoms, or right ventricular strain on ECG/ECHO.
 - Primary Diagnosis: Acute Pulmonary Embolism (PE).
-- Urgency: CRITICAL_EMERGENCY. Requires immediate oxygenation, CT Pulmonary Angiogram (CTPA), and therapeutic anticoagulation.
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Hemodynamic Support: Oxygen therapy to maintain SpO2 >= 92%; cautious fluid challenge (250-500 mL Normal Saline) if hypotensive.
+  2. Diagnostic Confirmation: CT Pulmonary Angiography (CTPA) or Bedside Echocardiogram if hemodynamically unstable.
+  3. Anticoagulation: Immediate LMWH (Enoxaparin 1 mg/kg SC q12h) or Unfractionated Heparin IV bolus + infusion.
+  4. Thrombolysis: Administer Alteplase 100 mg IV over 2 hours for Massive PE with refractory shock/hypotension (SBP < 90 mmHg).
 
 [DIAGNOSTIC_REF: SEPSIS_AND_SEPTIC_SHOCK]
-- Diagnostic Criteria: Fever > 38°C or hypothermia < 36°C, WBC > 12,000 or < 4,000 /cu.mm, HR > 90 bpm combined with Serum Lactate > 2.0 mmol/L or hypotension (SBP < 90 mmHg).
+- Diagnostic Criteria: Fever > 38°C or hypothermia < 36°C, WBC > 12,000 or < 4,000 /cu.mm, HR > 90 bpm combined with Serum Lactate > 2.0 mmol/L, altered mental status, or hypotension (SBP < 90 mmHg / MAP < 65 mmHg).
 - Primary Diagnosis: Severe Sepsis / Septic Shock.
-- Urgency: CRITICAL_EMERGENCY. Requires immediate broad-spectrum IV antibiotics, blood cultures, and fluid resuscitation.
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Sepsis Hour-1 Bundle: Measure blood lactate immediately; obtain two sets of blood cultures prior to antibiotics.
+  2. Empirical Antimicrobial Therapy: Administer broad-spectrum IV antibiotics (e.g., Piperacillin-Tazobactam + Vancomycin or Ceftriaxone) within 1 hour.
+  3. Fluid Resuscitation: Rapid IV crystalloid infusion at 30 mL/kg (Normal Saline or Ringer's Lactate) for hypotension or lactate >= 4 mmol/L.
+  4. Vasopressor Support: Initiate Norepinephrine IV infusion (titrated to MAP >= 65 mmHg) if persistent hypotension following fluid resuscitation.
 
 [DIAGNOSTIC_REF: DIABETIC_KETOACIDOSIS_DKA_AND_HHS]
-- Diagnostic Criteria: Blood Glucose > 250 mg/dL (13.9 mmol/L) combined with Urine/Serum Ketones POSITIVE, low Serum Bicarbonate (< 18 mEq/L), arterial pH < 7.30, or Kussmaul deep breathing.
+- Diagnostic Criteria: Blood Glucose > 250 mg/dL (13.9 mmol/L) with Urine/Serum Ketones POSITIVE, Serum Bicarbonate < 18 mEq/L, arterial pH < 7.30, elevated anion gap, or Kussmaul respiration.
 - Primary Diagnosis: Diabetic Ketoacidosis (DKA) or Hyperosmolar Hyperglycemic State (HHS).
-- Urgency: CRITICAL_EMERGENCY. Requires immediate IV fluid resuscitation, regular insulin infusion, and electrolyte management.
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Fluid Resuscitation: 0.9% Normal Saline IV infusion at 1,000-1,500 mL/hr during the first hour to restore intravascular volume.
+  2. Potassium Replacement: Check K+ prior to insulin; if K+ < 3.3 mEq/L, give KCl IV replacement before insulin. If K+ 3.3-5.3 mEq/L, add 20-30 mEq/L IV fluid.
+  3. Insulin Therapy: Regular Insulin IV bolus 0.1 units/kg, followed by continuous IV infusion at 0.1 units/kg/hr. Reduce glucose by 50-75 mg/dL/hr.
+  4. Acid-Base Monitoring: Add 5% Dextrose to IV fluids once blood glucose falls below 200 mg/dL; continue insulin until ketoacidosis resolves (pH > 7.30, HCO3 > 18 mEq/L).
 
 [DIAGNOSTIC_REF: DENGUE_HEMORRHAGIC_FEVER_DHF]
-- Diagnostic Criteria: Dengue NS1 POSITIVE or Dengue IgM POSITIVE combined with Platelet Count < 100,000 /cu.mm (Critical if < 50,000 /cu.mm), hematocrit rise >= 20%, or severe abdominal pain.
+- Diagnostic Criteria: Dengue NS1 POSITIVE or Dengue IgM POSITIVE combined with Platelet Count < 100,000 /cu.mm (Critical if < 50,000 /cu.mm), hematocrit rise >= 20%, plasma leakage (ascites/pleural effusion), severe abdominal pain, or mucosal bleeding.
 - Primary Diagnosis: Dengue Hemorrhagic Fever (DHF) / Severe Dengue.
-- Urgency: CRITICAL_EMERGENCY. Requires serial blood count monitoring and strict fluid balance management.
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Fluid Management: In critical phase, initiate isotonic IV crystalloid (Isolyte-P or Ringer's Lactate) at 5-7 mL/kg/hr for 1-2 hours, then titrate down based on hematocrit and urine output.
+  2. Transfusion Protocol: Transfuse Fresh Whole Blood or Packed Red Blood Cells (PRBC) for overt severe bleeding/falling hematocrit. Avoid routine prophylactic platelet transfusions unless active bleeding occurs with platelets < 10,000 /cu.mm.
+  3. Hemodynamic Monitoring: Hourly monitoring of BP, pulse pressure, urine output (target > 0.5 mL/kg/hr), and hematocrit every 4-6 hours.
+  4. Contraindications: Absolute avoidance of NSAIDs, Aspirin, and intramuscular injections. Use Paracetamol sparingly for fever.
 
 [DIAGNOSTIC_REF: ACUTE_RENAL_FAILURE_AKI]
-- Diagnostic Criteria: Rapid rise in Serum Creatinine (> 1.5 mg/dL) and BUN (> 20 mg/dL) combined with oliguria (< 0.5 mL/kg/hr) or hyperkalemia (Potassium > 5.5 mEq/L).
+- Diagnostic Criteria: Rapid rise in Serum Creatinine (> 1.5 mg/dL) and BUN (> 20 mg/dL), oliguria (< 0.5 mL/kg/hr for 6 hours), hyperkalemia (Potassium > 5.5 mEq/L), or severe fluid overload.
 - Primary Diagnosis: Acute Kidney Injury (AKI) / Acute Renal Failure.
-- Urgency: HIGH_PRIORITY. Requires urgent nephrology assessment and hyperkalemia protocol.
+- Urgency: HIGH_PRIORITY.
+- Immediate Emergency Treatment Protocol:
+  1. Etiology Evaluation: Assess fluid status (pre-renal vs intrinsic vs post-renal obstructive acute renal failure); perform renal ultrasound.
+  2. Hyperkalemia Emergency Protocol: If K+ > 6.0 mEq/L or ECG changes (peaked T waves), give Calcium Gluconate 10% 10 mL IV over 5 min, followed by Regular Insulin 10 units IV + 50 mL Dextrose 50% (D50W), and Nebulized Albuterol.
+  3. Fluid Management: Discontinue nephrotoxic agents (NSAIDs, aminoglycosides, contrast material); volume challenge if pre-renal; fluid restriction if oliguric fluid overload.
+  4. Dialysis Indication: Urgent Nephrology consultation for Hemodialysis if AEIOU criteria met (Acidosis, Electrolyte hyperkalemia, Ingestion toxins, Overload fluid, Uremia).
 
 [DIAGNOSTIC_REF: ACUTE_PANCREATITIS]
-- Diagnostic Criteria: Serum Lipase or Amylase >= 3x upper limit of normal (Lipase > 180 U/L) combined with severe epigastric abdominal pain radiating to the back and nausea/vomiting.
+- Diagnostic Criteria: Serum Lipase or Amylase >= 3x upper limit of normal (Lipase > 180 U/L) combined with severe epigastric abdominal pain radiating to the back, nausea, vomiting, or abdominal tenderness/distension.
 - Primary Diagnosis: Acute Pancreatitis.
-- Urgency: HIGH_PRIORITY. Requires IV fluid resuscitation, analgesia, and bowel rest.
+- Urgency: HIGH_PRIORITY.
+- Immediate Emergency Treatment Protocol:
+  1. Aggressive Fluid Resuscitation: Ringer's Lactate IV infusion at 200-500 mL/hr (or 5-10 mL/kg/hr) to maintain urine output > 0.5 mL/kg/hr.
+  2. Analgesia: IV opioids (e.g., Fentanyl 25-50 mcg IV or Morphine) for pain management.
+  3. Bowel Rest & Nutrition: NPO (nothing by mouth) initially during acute severe pain/vomiting; re-initiate early oral feeding with low-fat diet as pain improves.
+  4. Assessment & Imaging: Perform abdominal ultrasound to rule out gallstone etiology; CT abdomen with contrast after 72 hours if no clinical improvement.
 
 [DIAGNOSTIC_REF: ORGANOPHOSPHATE_POISONING_TOXICOLOGY]
-- Diagnostic Criteria: History of pesticide exposure/ingestion combined with cholinergic crisis symptoms (DUMBBELSS: Diarrhea, Urination, Miosis/pinpoint pupils, Bradycardia, Bronchospasm, Emesis, Lacrimation, Salivation) or low Serum Cholinesterase levels.
+- Diagnostic Criteria: History of agricultural pesticide exposure/ingestion combined with cholinergic crisis symptoms (DUMBBELSS: Diarrhea, Urination, Miosis/pinpoint pupils, Bradycardia, Bronchospasm/bronchorrhea, Emesis, Lacrimation, Salivation) or low Serum Cholinesterase.
 - Primary Diagnosis: Acute Organophosphate Insecticide Toxicity.
-- Urgency: CRITICAL_EMERGENCY. Requires immediate decontamination, Atropine administration, and Pralidoxime (2-PAM).
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Decontamination & Protection: Remove contaminated clothing immediately; wash skin with soap and cold water. Healthcare workers must wear PPE.
+  2. Antidote - Atropinization: Atropine 2 mg to 5 mg IV bolus every 5-10 minutes until full atropinization (drying of bronchial secretions, HR > 80 bpm, clearing of lungs).
+  3. Antidote - Oxime Therapy: Pralidoxime (2-PAM) 1 g to 2 g IV over 15-30 minutes, followed by continuous infusion of 500 mg/hr to reactivate acetylcholinesterase.
+  4. Airway Protection: Early endotracheal intubation and mechanical ventilation for respiratory failure due to excessive bronchorrhea and severe bronchospasm.
 
 [DIAGNOSTIC_REF: PARACETAMOL_ACETAMINOPHEN_OVERDOSE]
-- Diagnostic Criteria: Ingestion of > 7.5g to 10g Paracetamol, toxic 4-hour serum paracetamol levels on the Rumack-Matthew nomogram, accompanied by severe ALT/AST elevation (> 1,000 U/L) and acute liver injury.
+- Diagnostic Criteria: Ingestion of > 7.5g to 10g Paracetamol, toxic 4-hour serum acetaminophen levels plotted above the treatment line on the Rumack-Matthew nomogram, elevated ALT/AST (> 1,000 U/L), or acute hepatic encephalopathy.
 - Primary Diagnosis: Acute Paracetamol Overdose / Hepatotoxicity.
-- Urgency: CRITICAL_EMERGENCY. Requires immediate N-Acetylcysteine (NAC) antidote protocol.
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Decontamination: Administer Activated Charcoal 50 g to 100 g orally if presentation is within 1-2 hours of ingestion.
+  2. Antidote - N-Acetylcysteine (NAC): Initiate IV NAC protocol immediately if > 8 hours post-ingestion or toxic serum levels confirmed.
+  3. IV NAC Dosing: Loading dose 150 mg/kg IV in 200 mL D5W over 60 min; then 50 mg/kg IV in 500 mL D5W over 4 hours; then 100 mg/kg IV in 1,000 mL D5W over 16 hours.
+  4. Liver Failure Monitoring: Serial liver function tests (ALT/AST), INR, serum creatinine, and lactate. Consult Liver Transplant Unit for severe fulminant hepatic failure (King's College Criteria).
 
 [DIAGNOSTIC_REF: SNAKEBITE_ENVENOMATION]
-- Diagnostic Criteria: History of snakebite with local tissue swelling, neurotoxicity (ptosis, dysphagia, respiratory paralysis) or hemotoxicity (prolonged 20-minute Whole Blood Clotting Test / 20WBCT, active mucosal bleeding).
+- Diagnostic Criteria: History of snakebite with local tissue edema/necrosis, neurotoxicity (ptosis, ophthalmoplegia, dysphagia, respiratory paralysis) or hemotoxicity (prolonged 20-minute Whole Blood Clotting Test / 20WBCT > 20 min, active mucosal bleeding, coagulopathy).
 - Primary Diagnosis: Acute Snakebite Envenomation (Neurotoxic or Hemotoxic).
-- Urgency: CRITICAL_EMERGENCY. Requires immediate Polyvalent Antivenom (AVS) administration and airway management.
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Immobilization & First Aid: Immobilize affected limb with splint; DO NOT cut, suction, apply tourniquets, or apply ice. Keep patient calm and still.
+  2. Antivenom Administration: Administer Polyvalent Antivenom (AVS) 10 vials reconstituted in 500 mL Normal Saline IV over 1 hour if systemic envenomation signs or 20WBCT non-clotting.
+  3. Anaphylaxis Readiness: Keep Epinephrine 1:1,000 IV/IM available bedside prior to AVS infusion in case of severe antivenom reaction.
+  4. Airway Support & Re-Dosing: Assist ventilation / perform endotracheal intubation for neurotoxic respiratory failure; repeat 10 vials AVS if 20WBCT remains non-clotting after 6 hours.
 
 [DIAGNOSTIC_REF: BENZODIAZEPINE_OVERDOSE_AND_TOXICITY]
-- Diagnostic Criteria: Ingestion of benzodiazepines (Diazepam, Lorazepam, Alprazolam, Midazolam) with CNS depression, respiratory depression (RR < 10/min, hypoxia SpO2 < 90%), severe coma/unresponsiveness, or co-ingestion with alcohol/opioids.
-- Primary Diagnosis: Acute Benzodiazepine Overdose / Sedative-Hypotonic Toxicity.
-- Urgency: CRITICAL_EMERGENCY. Requires airway protection, oxygenation, continuous monitoring, and cautious consideration of Flumazenil (avoid in chronic users/seizure risk).
+- Diagnostic Criteria: Ingestion of benzodiazepines (Diazepam, Lorazepam, Alprazolam, Midazolam) with severe CNS depression, respiratory depression (RR < 10/min, SpO2 < 90%), ataxia, hyporeflexia, hypotension, or co-ingestion with alcohol/opioids.
+- Primary Diagnosis: Acute Benzodiazepine Overdose / Sedative-Hypnotic Toxicity.
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Airway & Ventilatory Support: Secure airway with bag-valve-mask or endotracheal intubation if GCS < 8 or severe hypoventilation present. Supplemental O2.
+  2. Circulatory Support: IV normal saline bolus for hypotension.
+  3. Targeted Reversal Agent: Consider Flumazenil 0.2 mg IV over 30 seconds (Max 1 mg). WARNING: Absolute contraindication in chronic benzodiazepine users, mixed tricyclic antidepressant overdose, or underlying epilepsy due to fatal seizure risk.
+  4. Continuous Observation: Monitor level of consciousness, respiratory rate, and cardiac rhythm for minimum 12-24 hours.
+
+[DIAGNOSTIC_REF: ANAPHYLACTIC_SHOCK]
+- Diagnostic Criteria: Sudden onset respiratory distress (wheezing, stridor, laryngeal edema), cardiovascular collapse/hypotension (BP < 90/60 mmHg), diffuse urticaria, angioedema, flushing, or gastrointestinal cramping following allergen exposure.
+- Primary Diagnosis: Anaphylaxis / Anaphylactic Shock.
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. First-Line Medication: Epinephrine (1:1,000) 0.3 mg to 0.5 mg IM into mid-outer anterolateral thigh immediately. Repeat every 5-15 minutes if symptoms persist.
+  2. Airway & Oxygen: 100% High-Flow Oxygen via non-rebreather mask. Prepare for immediate emergency airway/cricothyroidotomy if severe laryngeal edema occurs.
+  3. Fluid Resuscitation: Rapid IV infusion of 1-2 Liters Normal Saline bolus for refractory hypotension.
+  4. Adjunctive Medications: Diphenhydramine 50 mg IV (H1 antagonist) + Famotidine 20 mg IV (H2 antagonist) + Methylprednisolone 125 mg IV + Nebulized Albuterol 2.5 mg for bronchospasm.
+
+[DIAGNOSTIC_REF: TENSION_PNEUMOTHORAX]
+- Diagnostic Criteria: Acute severe dyspnea, unilateral absent breath sounds, tracheal deviation to contralateral side, distended neck veins (JVD), hypotension, hyperresonance on percussion, or cyanosis following trauma or barotrauma.
+- Primary Diagnosis: Tension Pneumothorax.
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Immediate Decompression: DO NOT WAIT FOR CHEST X-RAY. Immediate Needle Thoracostomy using 14-gauge catheter in 2nd intercostal space mid-clavicular line (or 5th intercostal space anterior axillary line).
+  2. Definitive Treatment: Insert Chest Tube (Tube Thoracostomy, 28-32 Fr) connected to under-water seal drainage system immediately following needle decompression.
+  3. Oxygenation: High-flow supplemental 100% Oxygen.
+  4. Hemodynamic Monitoring: Serial reassessment of breath sounds, pulse oximetry, blood pressure, and tracheal alignment.
+
+[DIAGNOSTIC_REF: SEVERE_TRAUMA_AND_HEMORRHAGIC_SHOCK]
+- Diagnostic Criteria: Massive traumatic hemorrhage, Class III/IV shock (BP < 90 mmHg, HR > 120 bpm, cold clammy extremities, confusion), pelvic/femoral fractures, penetrating abdominal trauma, or severe blood loss.
+- Primary Diagnosis: Severe Traumatic Hemorrhagic Shock.
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Immediate Hemostasis: Apply direct pressure, tourniquets to extremity bleeding, or pelvic binder for open-book pelvic fractures.
+  2. Airway & Breathing: Secure airway with C-spine stabilization; high-flow O2.
+  3. Massive Transfusion Protocol (MTP): Activate MTP; transfuse Packed Red Blood Cells (PRBC), Fresh Frozen Plasma (FFP), and Platelets in a 1:1:1 balanced ratio. Limit crystalloids to avoid dilutional coagulopathy.
+  4. Tranexamic Acid (TXA): Administer Tranexamic Acid (TXA) 1 gram IV over 10 minutes within 3 hours of trauma injury, followed by 1 gram IV infusion over 8 hours. Emergency surgical/interventional radiology intervention for source control.
+
+[DIAGNOSTIC_REF: ACUTE_CARBON_MONOXIDE_POISONING]
+- Diagnostic Criteria: Exposure to fire smoke, generator exhaust, or closed space heaters combined with severe headache, confusion, seizure, coma, cherry-red skin (late sign), elevated Carboxyhemoglobin (COHb > 10% in non-smokers, > 15% in smokers), or ischemic ECG changes.
+- Primary Diagnosis: Acute Carbon Monoxide (CO) Poisoning.
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Exposure Removal: Remove patient immediately from toxic carbon monoxide environment; ensure responder safety.
+  2. High-Flow Normobaric Oxygenation: Administer 100% High-Flow Oxygen via non-rebreather reservoir mask immediately (reduces COHb half-life from 320 mins to 80 mins).
+  3. Hyperbaric Oxygen (HBO) Referral: Evaluate for Hyperbaric Oxygen Therapy (HBOT) if COHb > 25%, altered mental status/coma, pregnancy (COHb > 15%), myocardial ischemia, or severe acidosis.
+  4. Critical Monitoring: Serial ECG, cardiac biomarkers, and neurological evaluations.
+
+[DIAGNOSTIC_REF: ACUTE_EXACERBATION_OF_COPD]
+- Diagnostic Criteria: Progressive severe dyspnea, wheezing, productive cough with purulent sputum, hypercapnia, cyanosis, SpO2 < 88% in chronic smokers or known COPD patients.
+- Primary Diagnosis: Acute Exacerbation of Chronic Obstructive Pulmonary Disease (AECOPD).
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Controlled Oxygenation: Titrated O2 via Venturi mask targeting SpO2 88-92% (avoid abolishing hypoxic drive).
+  2. Bronchodilators: Nebulized Salbutamol 2.5 mg + Ipratropium Bromide 0.5 mg every 20-30 minutes for first hour.
+  3. Systemic Steroids & Antibiotics: Hydrocortisone 100 mg IV or Methylprednisolone 40 mg IV + empirical IV Ceftriaxone 1-2g or Azithromycin for purulent sputum.
+  4. Ventilatory Support: Initiate Non-Invasive Positive Pressure Ventilation (NIV / BiPAP) for acute hypercapnic respiratory acidosis (pH < 7.35, PaCO2 > 45 mmHg).
+
+[DIAGNOSTIC_REF: ACUTE_DECOMPENSATED_HEART_FAILURE_AND_PULMONARY_EDEMA]
+- Diagnostic Criteria: Acute respiratory distress, orthopnea, bilateral pulmonary crackles/crepitations, pink frothy sputum, S3 gallop, elevated BNP/NT-proBNP, cardiomegaly on CXR, SBP > 180 mmHg or severe hypotension.
+- Primary Diagnosis: Acute Decompensated Heart Failure (ADHF) / Acute Pulmonary Edema.
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Oxygenation & Positioning: Sit patient upright (90 degrees); high-flow O2 or CPAP/NIV to reduce preload and work of breathing.
+  2. Diuresis: Furosemide 40 mg to 80 mg IV bolus (double home dose if known HF).
+  3. Vasodilator Therapy: Sublingual Nitroglycerin (0.4 mg every 5 min) or continuous IV Nitroglycerin infusion if SBP > 110 mmHg.
+  4. Inotropic Support: Dobutamine or Norepinephrine IV infusion if hypotensive cardiogenic shock (SBP < 90 mmHg).
+
+[DIAGNOSTIC_REF: HYPERTENSIVE_EMERGENCY_AND_ENCEPHALOPATHY]
+- Diagnostic Criteria: Severe blood pressure elevation (SBP > 180 mmHg or DBP > 120 mmHg) accompanied by acute end-organ damage (headache, confusion, altered mental status, papilledema, acute heart failure, acute kidney injury).
+- Primary Diagnosis: Hypertensive Emergency / Hypertensive Encephalopathy.
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Controlled Blood Pressure Reduction: Reduce Mean Arterial Pressure (MAP) by maximum 20-25% in the first hour to prevent cerebral ischemia.
+  2. Pharmacotherapy: Labetalol 20 mg IV bolus every 10 mins (or Nicardipine infusion 5-15 mg/hr). Use Sodium Nitroprusside IV infusion for severe encephalopathy.
+  3. Organ Monitoring: Continuous intra-arterial BP monitoring, serial neurological exams, ECG, and renal function monitoring.
+  4. Avoidance: Absolute avoidance of sublingual Nifedipine (causes catastrophic sudden BP drops and cerebral/myocardial infarction).
+
+[DIAGNOSTIC_REF: CARDIAC_ARREST_ACLS]
+- Diagnostic Criteria: Unresponsiveness, absence of normal breathing (apnea or agonal gasping), absence of central pulse (carotid/femoral) within 10 seconds.
+- Primary Diagnosis: Sudden Cardiac Arrest (Shockable: VF/pVT vs Non-Shockable: Asystole/PEA).
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. High-Quality CPR: Immediate chest compressions at 100-120/min, depth 5-6 cm, minimize interruptions. Apply defibrillator pads.
+  2. Defibrillation (if Shockable): Shock immediately (120-200J Biphasic) for VF/pVT; resume CPR immediately for 2 minutes.
+  3. Medications: Epinephrine 1 mg IV/IO every 3-5 minutes. Amiodarone 300 mg IV/IO bolus for refractory VF/pVT (second dose 150 mg).
+  4. Reversible Causes (5 Hs & 5 Ts): Identify and manage Hypovolemia, Hypoxia, Hydrogen ion (acidosis), Hypo/Hyperkalemia, Hypothermia, Tension pneumothorax, Tamponade, Toxins, Thrombosis (pulmonary/coronary).
+
+[DIAGNOSTIC_REF: ROAD_TRAFFIC_ACCIDENT_RTA_AND_POLYTRAUMA]
+- Diagnostic Criteria: High-energy blunt impact, severe external trauma, multiple long bone fractures, flail chest, crushed pelvis, internal hemorrhage, GCS depression following vehicular accident.
+- Primary Diagnosis: Polytrauma / High-Energy Road Traffic Injury.
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. ATLS Primary Survey: A- Airway with rigid C-spine restriction; B- Breathing with high-flow O2; C- Circulation with direct hemorrhage control.
+  2. Hemostasis & Stabilization: Apply tourniquets to extremity bleeding; apply pelvic binder immediately for pelvic instability.
+  3. Resuscitation & Diagnostics: Establish two 14-16G IV lines; perform eFAST ultrasound (chest/abdomen/pelvis); obtain trauma panel labs and CT imaging once stable.
+  4. Emergency Surgery Referral: Immediate transfer to trauma surgery operating suite for damage control laparotomy/thoracotomy.
+
+[DIAGNOSTIC_REF: TRAUMATIC_BRAIN_INJURY_TBI_AND_EPIDURAL_HEMORRHAGE]
+- Diagnostic Criteria: Head trauma with transient loss of consciousness, "lucid interval" followed by rapid deterioration, unilateral pupil dilation (blown pupil), hemiparesis, Cushing's Triad (bradycardia, hypertension, irregular respiration).
+- Primary Diagnosis: Severe Traumatic Brain Injury (TBI) / Epidural Hemorrhage (EDH) / Subdural Hemorrhage (SDH).
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Airway & ICP Management: Endotracheal intubation if GCS <= 8; maintain head of bed elevated 30 degrees in neutral position.
+  2. Hyperosmolar Therapy: Mannitol 20% (0.5-1.0 g/kg IV over 15 min) or Hypertonic Saline 3% (250 mL IV over 15 min) for signs of herniation/elevated ICP.
+  3. Diagnostic Imaging: Emergency non-contrast head CT scan.
+  4. Surgical Decompression: Emergency Neurosurgical Consultation for decompressive craniotomy / hematoma evacuation.
+
+[DIAGNOSTIC_REF: DROWNING_AND_NEAR_DROWNING_ASPHYXIA]
+- Diagnostic Criteria: Submersion in water/liquid, respiratory failure, severe hypoxia (SpO2 < 85%), hypothermia, pulmonary edema, cardiac arrest, or unconsciousness following liquid submersion.
+- Primary Diagnosis: Submersion Injury / Drowning Asphyxia / Acute Lung Injury.
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Rescue Ventilation: Give 5 initial rescue breaths immediately upon recovery from water; initiate CPR 30:2 if no pulse.
+  2. Oxygenation & Intubation: Supplemental high-flow 100% O2; early intubation and PEEP for severe pulmonary edema/ARDS.
+  3. Core Rewarming: Active rewarming (warm blankets, warmed IV fluids at 39-40°C) for hypothermia.
+  4. Monitoring: Cervical spine evaluation if head/diving injury suspected; continuous cardiac monitoring for hypothermia-induced dysrhythmias.
+
+[DIAGNOSTIC_REF: HEAT_STROKE_AND_HYPERTHERMIA]
+- Diagnostic Criteria: Core body temperature > 40°C (104°F) during extreme ambient heat waves, anhidrosis (absence of sweating), severe CNS dysfunction (delirium, ataxia, seizures, coma), hypotension, tachycardia.
+- Primary Diagnosis: Heat Stroke (Exertional or Classical Non-Exertional).
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Rapid Cooling Protocol: Immediate ice-water immersion or evaporative misting with cold water and fan airflow. Target core temp reduction to < 39°C within 30 minutes.
+  2. Resuscitation: Chilled Normal Saline IV infusion (1-2 Liters); avoid antipyretics (Paracetamol/Aspirin ineffective and worsen hepatotoxicity/coagulopathy).
+  3. Seizure Control: Lorazepam 2-4 mg IV for heat-induced convulsions.
+  4. Complication Monitoring: Monitor for rhabdomyolysis (urine myoglobin, CPK), acute renal failure, and DIC.
+
+[DIAGNOSTIC_REF: ACUTE_UPPER_GASTROINTESTINAL_BLEEDING_VARICEAL]
+- Diagnostic Criteria: Massive hematemesis (vomiting blood), melena (black tarry stool), hypovolemic shock (BP < 90 mmHg, HR > 110 bpm) in patients with liver cirrhosis, portal hypertension, or peptic ulcer disease.
+- Primary Diagnosis: Acute Upper Gastrointestinal Bleeding (Esophageal Variceal Bleed or Peptic Ulcer Hemorrhage).
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Resuscitation & Airway Protection: Early intubation for massive hematemesis; two large-bore IVs; transfuse PRBC targeting Hb 7-8 g/dL.
+  2. Vasoactive Therapy: Octreotide 50 mcg IV bolus followed by 50 mcg/hr IV continuous infusion (reduces portal venous pressure).
+  3. Acid Suppression & Antibiotics: Pantoprazole 80 mg IV bolus + 8 mg/hr infusion; Ceftriaxone 1g IV daily for infection prophylaxis in cirrhotic bleeding.
+  4. Endoscopy: Urgent diagnostic and therapeutic upper GI endoscopy (variceal ligation/banding or ulcer cauterization) within 12 hours.
+
+[DIAGNOSTIC_REF: ACUTE_HEPATIC_ENCEPHALOPATHY_AND_FULMINANT_LIVER_FAILURE]
+- Diagnostic Criteria: Acute jaundice, asterixis (flapping wrist tremor), hyperammonemia, prolonged PT/INR > 1.5, hepatic encephalopathy (confusion, stupor, coma) in viral hepatitis (HBV/HEV), toxic hepatitis, or cirrhosis.
+- Primary Diagnosis: Acute Liver Failure (ALF) / Fulminant Hepatic Encephalopathy.
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Ammonia Reduction: Lactulose 30 mL orally/via NG tube every 1-2 hours until bowel movement, then titrate to 2-3 soft stools/day; add Rifaximin 550 mg PO BID.
+  2. Airway Protection: Endotracheal intubation for Grade 3/4 encephalopathy (GCS <= 8) to prevent aspiration.
+  3. Coagulopathy Management: Vitamin K 10 mg IV; avoid routine FFP unless active bleeding or invasive procedure planned.
+  4. Cerebral Edema Prophylaxis: Mannitol 20% IV for signs of elevated ICP; evaluate for urgent emergency liver transplantation.
+
+[DIAGNOSTIC_REF: PERFORATED_PEPTIC_ULCER_AND_ACUTE_PERITONITIS]
+- Diagnostic Criteria: Sudden severe "board-like" abdominal rigidity, rebound tenderness, severe abdominal pain, guarding, tachycardia, hypotension, free air under diaphragm on erect chest/abdominal X-ray (pneumoperitoneum).
+- Primary Diagnosis: Perforated Viscus / Perforated Peptic Ulcer with Acute Generalized Peritonitis.
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Emergency Resuscitation: NPO; insert Nasogastric (NG) tube for continuous suction; aggressive IV crystalloid fluid resuscitation.
+  2. Empiric Antimicrobial Coverage: Broad-spectrum IV antibiotics (Ceftriaxone 2g IV + Metronidazole 500mg IV).
+  3. Hemodynamic Support: Norepinephrine IV infusion if shock persists post-fluids.
+  4. Emergency Surgery: Immediate emergency exploratory laparotomy for ulcer patch repair and peritoneal lavage.
+
+[DIAGNOSTIC_REF: SEVERE_ACUTE_DIARRHEA_AND_CHOLERA_SHOCK]
+- Diagnostic Criteria: Profuse painless "rice-water" watery diarrhea (Vibrio cholerae), severe dehydration, sunken eyes, loss of skin turgor, severe muscle cramps, hypovolemic shock (BP < 80/40 mmHg, pulse weak/absent).
+- Primary Diagnosis: Acute Severe Watery Diarrhea with Hypovolemic Shock / Cholera Gravis.
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Immediate Rapid Rehydration: IV Ringer's Lactate or WHO Cholera Solution 100 mL/kg rapidly (30 mL/kg in first 30 mins, then 70 mL/kg over 2.5 hours).
+  2. Oral Electrolyte Therapy: Oral Rehydration Solution (ORS) as soon as patient can drink.
+  3. Antibiotic Eradication: Doxycycline 300 mg single oral dose (or Azithromycin 1g PO single dose) once vomiting ceases to reduce diarrhea duration.
+  4. Monitoring: Track fluid input vs fluid loss (cholera cot stool collection); monitor serum potassium and sodium.
+
+[DIAGNOSTIC_REF: SEVERE_FALCIPARUM_MALARIA]
+- Diagnostic Criteria: High fever with chills, thick/thin blood smear or Rapid Diagnostic Test (RDT) POSITIVE for Plasmodium falciparum, cerebral malaria (coma, seizures), severe anemia (Hb < 5 g/dL), hemoglobinuria ("blackwater fever"), acute kidney injury.
+- Primary Diagnosis: Severe Plasmodium Falciparum Malaria.
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Intravenous Antimalarial Therapy: IV Artesunate 2.4 mg/kg IV bolus at 0, 12, and 24 hours, then daily until oral therapy tolerated.
+  2. Hypoglycemia Correction: Check blood glucose every 4 hours (artesunate/quinine induce hypoglycemia); give Dextrose 25% 50 mL IV for hypoglycemia.
+  3. Blood Transfusion: Transfuse PRBC for severe malarial anemia (Hb < 5 g/dL or severe respiratory distress).
+  4. Seizure Control: IV Lorazepam 4 mg for cerebral malarial convulsions.
+
+[DIAGNOSTIC_REF: RABIES_ENCEPHALITIS_PREVENTION_AND_EXPOSURE]
+- Diagnostic Criteria: Category III animal bite (dog/jackal/cat/bat) with transdermal punctures/saliva contamination. Active clinical disease presents with hydrophobia, aerophobia, agitation, brainstem dysfunction, 100% lethality once symptoms appear.
+- Primary Diagnosis: Rabies Lyssavirus Exposure (Category III) / Rabies Encephalitis.
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Immediate Local Wound Washing: Flush and wash all bite wounds thoroughly with soap and running water for at least 15 minutes immediately. Apply povidone-iodine.
+  2. Passive Immunization: Human Rabies Immunoglobulin (HRIG) 20 IU/kg infiltrated directly into and around all bite wound margins.
+  3. Active Immunization: Cell-culture Rabies Vaccine IM (or Intradermal schedule) administered at Days 0, 3, 7, 14, and 28.
+  4. Contraindications: DO NOT primary suture bite wounds immediately unless required for life-threatening hemorrhage control.
+
+[DIAGNOSTIC_REF: ACUTE_BACTERIAL_MENINGITIS]
+- Diagnostic Criteria: Triad of high fever (> 38.5°C), nuchal rigidity (stiff neck), altered mental status; Kernig's/Brudzinski's sign POSITIVE; petechial purpuric rash (Neisseria meningitidis).
+- Primary Diagnosis: Acute Bacterial Meningitis (Neisseria meningitidis / Streptococcus pneumoniae).
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Immediate Empirical Antimicrobials: Ceftriaxone 2g IV q12h + Vancomycin 15-20 mg/kg IV q8-12h immediately. DO NOT DELAY ANTIBIOTICS FOR LUMBAR PUNCTURE.
+  2. Adjuvant Steroid Therapy: Dexamethasone 10 mg IV administered 15-20 minutes before or with the first dose of antibiotics (reduces neurological sequelae and hearing loss).
+  3. Diagnostic LP: Lumbar Puncture (CSF analysis) after head CT rules out elevated ICP / mass lesion.
+  4. Droplet Isolation: Respiratory droplet isolation for suspected N. meningitidis.
+
+[DIAGNOSTIC_REF: ALUMINUM_PHOSPHIDE_POISONING_RICE_TABLET]
+- Diagnostic Criteria: Ingestion of "Rice Tablet" / "Gas Tablet" (Aluminum Phosphide), garlic smell on breath, severe vomiting, lethal metabolic acidosis, refractory cardiogenic shock, myocarditis.
+- Primary Diagnosis: Acute Aluminum Phosphide / Phosphine Gas Toxicity.
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Gastric Decontamination: Gastric lavage with Vegetable Oil (Coconut/Olive oil) + Liquid Paraffin to accelerate phosphine excretion. DO NOT USE WATER OR SALINE (water accelerates phosphine gas generation).
+  2. Membrane Stabilization: Magnesium Sulfate 3g IV infusion over 30 mins, followed by 1g/hr for 24 hours (reduces lethal dysrhythmias).
+  3. Acidosis Correction: Sodium Bicarbonate 8.4% IV infusion titrated to arterial pH > 7.20.
+  4. Shock Management: Continuous Norepinephrine and Dobutamine IV infusions; early ICU admission.
+
+[DIAGNOSTIC_REF: METHANOL_POISONING_TOXIC_ALCOHOL]
+- Diagnostic Criteria: History of bootleg/country liquor ingestion, visual disturbances ("snowfield vision", blurred vision, optic disc hyperemic edema), altered mental status, severe high-anion-gap metabolic acidosis (pH < 7.20, HCO3 < 10 mEq/L).
+- Primary Diagnosis: Acute Toxic Alcohol / Methanol Poisoning.
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Alcohol Dehydrogenase Blockade: Ethanol 10% IV infusion (or 40% oral spirits loading dose 1-1.5 mL/kg) targeting serum ethanol 100-150 mg/dL to competitively block toxic formate formation.
+  2. Acidosis & Elimination: Sodium Bicarbonate IV infusion for severe acidosis; Folinic Acid 50 mg IV q6h to accelerate formate metabolism.
+  3. Hemodialysis: Urgent Emergency Hemodialysis for visual symptoms, severe acidosis, or serum methanol > 50 mg/dL.
+  4. Monitoring: Serial ABG, anion gap, osmolar gap, and visual acuity testing.
+
+[DIAGNOSTIC_REF: ECLAMPSIA_AND_SEVERE_PREECLAMPSIA]
+- Diagnostic Criteria: Pregnant female (> 20 weeks gestational age) or postpartum with severe hypertension (BP >= 160/110 mmHg), proteinuria, combined with generalized tonic-clonic seizures, severe frontal headache, visual scotoma, or epigastric pain.
+- Primary Diagnosis: Eclampsia / Severe Preeclampsia.
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Anticonvulsant Therapy: Magnesium Sulfate 4g IV loading dose in 100 mL Normal Saline over 10-15 minutes, followed by 1g/hr continuous IV maintenance infusion.
+  2. Antihypertensive Therapy: Labetalol 20 mg IV bolus (or Hydralazine 5 mg IV) to keep DBP 90-100 mmHg and SBP < 160 mmHg.
+  3. Toxicity Monitoring: Monitor patellar tendon reflexes, respiratory rate (> 16/min), and urine output (> 30 mL/hr). Have Calcium Gluconate 10% 10 mL IV available for MgSO4 toxicity.
+  4. Definitive Care: Urgent Obstetric Consultation for emergency operative delivery / C-section once stabilized.
+
+[DIAGNOSTIC_REF: STATUS_EPILEPTICUS]
+- Diagnostic Criteria: Continuous seizure activity lasting > 5 minutes, or two or more discrete seizure episodes without full neurological recovery of consciousness between events.
+- Primary Diagnosis: Generalized Convulsive Status Epilepticus.
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. First-Line Benzodiazepine (0-10 min): Lorazepam 4 mg IV over 2 minutes (or Midazolam 10 mg IM / Diazepam 10 mg IV). Supplemental O2 and airway positioning.
+  2. Second-Line Antiepileptic (10-30 min): Levetiracetam 60 mg/kg IV (max 4,500 mg) or Phenytoin 20 mg/kg IV infusion over 20 minutes if seizures persist.
+  3. Third-Line Anesthetic Agent (> 30 min): Propofol IV bolus + infusion, or Midazolam infusion; perform endotracheal intubation and mechanical ventilation.
+  4. Metabolic Screen: Immediate bedside point-of-care blood glucose check to rule out hypoglycemia.
+
+[DIAGNOSTIC_REF: SEVERE_ACUTE_MALNUTRITION_SAM_WITH_COMPLICATIONS]
+- Diagnostic Criteria: Pediatric patient with weight-for-height Z-score < -3 SD, bilateral pitting nutritional edema (Kwashiorkor), mid-upper arm circumference (MUAC) < 115 mm combined with hypothermia (< 35.5°C), severe hypoglycemia (< 54 mg/dL), or systemic infection.
+- Primary Diagnosis: Severe Acute Malnutrition (SAM) with Medical Complications.
+- Urgency: CRITICAL_EMERGENCY.
+- Immediate Emergency Treatment Protocol:
+  1. Hypoglycemia & Hypothermia Protocol: 10% Dextrose 5 mL/kg IV or oral immediately; warm environment, skin-to-skin contact, re-feed with F-75 formula every 2 hours.
+  2. Cautious Rehydration: Avoid standard IV saline (causes fatal heart failure); give ReSoMal (Rehydration Solution for Malnutrition) orally/NG tube at 5 mL/kg q30m for first 2 hours.
+  3. Empirical Antimicrobials: Ampicillin IV + Gentamicin IV for all SAM emergency admissions (infection signs suppressed).
+  4. Electrolyte Correction: Potassium replacement (3-4 mmol/kg/day) and Zinc supplementation.
+================================================================================

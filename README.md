@@ -1,141 +1,216 @@
-# HouseMD 
 
-AI medical engine specialized in high-precision clinical diagnosis, emergency triage, and deterministic RAG execution.
+---
 
-## Overview
+```markdown
+# 🏥 HouseMD AI Engine (AegisMed)
 
-HouseMD is an enterprise-grade, deterministic Retrieval-Augmented Generation (RAG) microservice built with FastAPI, ChromaDB, and the Google GenAI SDK. Designed for high-stress healthcare environments—such as emergency departments, ICU corridor-clearing systems, and rural diagnostic centers—the engine automates the evaluation of unstructured medical presentation notes, emergency triage reports, and clinical lab findings.
+> **Deterministic Dual-Tier Emergency Clinical Decision Support & Mass Casualty Triage Engine**
 
-To eliminate the key operational risks of clinical AI, HouseMD incorporates three core design principles:
+[![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
+[![ChromaDB](https://img.shields.io/badge/VectorDB-ChromaDB-FF6F00?logo=chromadb)](https://www.trychroma.com/)
+[![Google GenAI SDK](https://img.shields.io/badge/LLM-Google_Gemini-4285F4?logo=google)](https://ai.google.dev/)
+[![Streamlit Cloud](https://img.shields.io/badge/Frontend-Streamlit-FF4B4B?logo=streamlit)](https://streamlit.io/)
+[![Render](https://img.shields.io/badge/Deployment-Render-46E3B7?logo=render)](https://render.com/)
 
-- **Deterministic Vector Grounding:** Cross-references incoming clinical cases against an indexed ChromaDB knowledge base of emergency protocols (e.g., FAST stroke criteria, cardiac troponin thresholds, and DUMBBELSS toxicology profiles).
-- **10-Model Resilient Failover Cascade:** Automatically switches across a 10-model fallback sequence (`gemini-2.5-flash`, `gemini-3.6-flash`, `gemini-2.5-pro`, etc.) to survive rate limits and API outages seamlessly.
-- **Strict Pydantic Contracts:** Guarantees 100% structured JSON output (`AegisMedAuditResponse`), eliminating JSON parsing errors for downstream Electronic Health Record (EHR) systems and frontend dashboards.
+---
 
-## Quick Start
+## 📌 Overview
+
+**HouseMD AI Engine** (also known as **AegisMed**) is an enterprise-grade microservice built with **FastAPI**, **ChromaDB**, and the **Google GenAI SDK**, coupled with a **Streamlit** frontend interface. Designed for high-stress healthcare environments—such as emergency departments, mass casualty incidents (MCI), ICU corridor-clearing systems, and rural triage centers—the engine automates the evaluation of unstructured medical presentation notes, emergency reports, and lab results.
+
+To eliminate clinical AI risks while ensuring high availability, HouseMD operates on three core principles:
+
+- **Dual-Tier Safety Protocol:** Enforces deterministic, **zero-hallucination vector grounding** against 36 indexed emergency guidelines for critical cases, while enabling a safe **foundation model fallback** for unindexed or stable presentations.
+- **Resilient Model Failover Cascade:** Automatically cycles through a fallback sequence of Google Gemini models to handle rate limits and transient outages seamlessly.
+- **Strict Pydantic Type Enforcement:** Guarantees 100% structured JSON outputs (`AegisMedAuditResponse`) for direct integration with hospital Electronic Health Record (EHR) systems and frontend dashboards.
+
+---
+
+## ⚡ System Architecture: Dual-Tier Triage Framework
+
+During mass casualties or clinical emergencies, healthcare providers require immediate, non-hallucinated intervention steps while maintaining a safe screening process for lower-priority presentations.
+
+
+```
+
+```
+                          [ Incoming Patient Presentation ]
+                                          │
+                                          ▼
+                             [ ChromaDB Vector Query ]
+                                          │
+              ┌───────────────────────────┴───────────────────────────┐
+              ▼                                                       ▼
+    [ Match Found in Index ]                               [ No Index Match Found ]
+
+```
+
+(36 Indexed Emergency Guidelines)                           (Unindexed / Non-Critical)
+│                                                       │
+▼                                                       ▼
+┌───────────────────────────┐                           ┌───────────────────────────┐
+│ TIER 1: STRICT GROUNDING  │                           │ TIER 2: GENERAL FALLBACK  │
+│ • Zero Hallucination      │                           │ • Foundation Model Logic  │
+│ • Grounded in Protocol    │                           │ • Lower Triage Priority   │
+│ • Step-by-Step Action Plan│                           │ • Standard Clinical Review│
+└───────────────────────────┘                           └───────────────────────────┘
+
+```
+
+1. **Tier 1 — Strict Verified Guideline Matching (`CRITICAL_EMERGENCY` / `HIGH_PRIORITY`):**
+   * Cross-references incoming clinical data against **36 pre-indexed emergency guidelines** stored in ChromaDB.
+   * Forces Gemini to base diagnoses, triage levels, and step-by-step emergency actions exclusively on verified reference guidelines.
+2. **Tier 2 — General Emergency Reasoning Fallback (`STABLE` / Unindexed):**
+   * For non-indexed presentations, the engine gracefully leverages Gemini’s medical foundation knowledge to evaluate the patient while explicitly tagging the output as an unindexed general clinical assessment.
+
+---
+
+## 📋 Indexed Clinical Guidelines Scope (36 Conditions)
+
+The internal vector repository (`medical_reference.txt`) indexes 36 high-yield emergency conditions complete with diagnostic triggers and step-by-step immediate treatment protocols:
+
+* **Cardiovascular & Cerebrovascular:** Acute Stroke (CVA), Acute Coronary Syndrome & MI (STEMI/NSTEMI), Acute Pulmonary Embolism (PE), Hypertensive Emergency, Acute Decompensated Heart Failure & Pulmonary Edema.
+* **Trauma & Resuscitation:** Severe Traumatic Hemorrhagic Shock, Polytrauma/RTA, Traumatic Brain Injury (TBI/EDH), Tension Pneumothorax, Sudden Cardiac Arrest (ACLS), Drowning & Near-Drowning Asphyxia.
+* **Toxico-Environmental:** Organophosphate Toxicity, Paracetamol Overdose, Benzodiazepine Toxicity, Aluminum Phosphide (Rice Tablet) Poisoning, Methanol Poisoning, Carbon Monoxide Poisoning, Heat Stroke, Snakebite Envenomation.
+* **Sepsis & Infectious Disasters:** Severe Sepsis & Septic Shock, Dengue Hemorrhagic Fever (DHF), Severe Falciparum Malaria, Severe Acute Watery Diarrhea & Cholera Shock, Acute Bacterial Meningitis, Rabies Lyssavirus Exposure.
+* **Obstetrics, Gastrointestinal & Metabolic:** Eclampsia & Severe Preeclampsia, Diabetic Ketoacidosis (DKA/HHS), Status Epilepticus, Acute Kidney Injury (AKI), Acute Pancreatitis, Acute Upper GI Bleeding, Perforated Peptic Ulcer & Peritonitis, Fulminant Hepatic Encephalopathy, Severe Acute Malnutrition (SAM).
+
+---
+
+## 🚀 Quick Start & Local Management
+
+### 1. Installation
 
 ```bash
 git clone [https://github.com/mahinshahriar30/aegismed-ai-engine.git](https://github.com/mahinshahriar30/aegismed-ai-engine.git)
 cd aegismed-ai-engine
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-export GEMINI_API_KEY="your_actual_gemini_api_key_here"
-nohup uvicorn src.api:app --host 0.0.0.0 --port 8000 > server.log 2>&1 &
 
 ```
 
-Access API documentation at `http://YOUR_IP:8000/docs`
+### 2. Set Environment Variables
 
-## Features
+```bash
+export GEMINI_API_KEY="your_actual_gemini_api_key_here"
+export PORT=8000
 
-* **Zero-Hallucination Grounded Triage:** Grounded RAG reasoning cited against indexed clinical guidelines.
-* **10-Model Resilient Failover:** Automated, sub-second failover loop across 10 Google Gemini models.
-* **Domain-Aware Guideline Chunking:** Custom splitting on `[DIAGNOSTIC_REF:` boundary tags to preserve complete diagnostic blocks.
-* **Strict Type Enforcement:** Native GenAI schema binding with Pydantic for zero-error JSON responses.
-* **Isolated Testing Pipeline:** Modular unit testing via `test_engine.py` without server overhead or DB mutation.
+```
 
-## API
+### 3. Run Application
 
-### GET /health
+```bash
+# Start FastAPI backend (Foreground)
+uvicorn src.api:app --host 0.0.0.0 --port 8000 --reload
 
-Returns `{"status": "ok", "system": "HouseMD Engine Operational"}`
+# Start FastAPI backend (Background)
+nohup uvicorn src.api:app --host 0.0.0.0 --port 8000 > server.log 2>&1 &
 
-### POST /api/v1/diagnose
+# Start Streamlit UI
+streamlit run app.py
 
-Request:
+```
+
+Access Interactive API Documentation at `http://localhost:8000/docs`
+
+---
+
+## 📡 API Endpoint Reference
+
+### `GET /health`
+
+Returns system status.
+
+```json
+{"status": "ok", "system": "HouseMD Engine Operational"}
+
+```
+
+### `POST /api/v1/diagnose`
+
+**Request:**
 
 ```json
 {
-  "document_text": "PATIENT PRESENTATION: 54-year-old male with central crushing chest pain radiating to left jaw, diaphoresis. Vitals: BP 140/90, HR 105. Labs: Cardiac Troponin I: 0.85 ng/mL.",
+  "document_text": "EMERGENCY ROOM ASSESSMENT: 28-year-old agricultural worker with accidental pesticide exposure. Pinpoint pupils (miosis), profuse salivation, vomiting, wheezing. HR 48 bpm, BP 85/55 mmHg.",
   "domain": "medical"
 }
 
 ```
 
-Response:
+**Response:**
 
 ```json
 {
-  "patient_summary": "54-year-old male presenting with central crushing chest pain, diaphoresis, and elevated Cardiac Troponin I (0.85 ng/mL).",
+  "patient_summary": "28-year-old agricultural worker presenting with cholinergic crisis symptoms following pesticide exposure, including miosis, profuse salivation, wheezing, bradycardia (HR 48 bpm), and hypotension (BP 85/55 mmHg).",
   "primary_diagnosis": {
-    "condition_name": "Acute Myocardial Infarction (AMI)",
+    "condition_name": "Acute Organophosphate Insecticide Toxicity",
     "triage_level": "CRITICAL_EMERGENCY",
-    "clinical_justification": "Cardiac Troponin I level of 0.85 ng/mL significantly exceeds the diagnostic threshold (0.04 ng/mL) accompanied by typical ischemic symptoms.",
-    "reference_guideline": "ACUTE_CORONARY_SYNDROME_AND_MI"
+    "clinical_justification": "Presentation matches classic cholinergic crisis (DUMBBELSS criteria: miosis, salivation, bronchospasm, bradycardia, hypotension) following pesticide exposure.",
+    "reference_guideline": "ORGANOPHOSPHATE_POISONING_TOXICOLOGY"
   },
   "differential_diagnoses": [],
   "immediate_emergency_actions": [
-    "Obtain immediate 12-lead ECG within 10 minutes",
-    "Administer antiplatelet therapy as per acute ACS protocol",
-    "Activate Emergency Cardiac Cath Lab for urgent PCI referral"
+    "Remove contaminated clothing and wash skin with soap and cold water immediately (PPE required for staff)",
+    "Administer Atropine 2 mg to 5 mg IV bolus every 5-10 minutes until full atropinization (clearing of lungs, HR > 80 bpm)",
+    "Administer Pralidoxime (2-PAM) 1 g to 2 g IV over 15-30 minutes followed by continuous infusion",
+    "Prepare for early endotracheal intubation if respiratory failure or excessive bronchorrhea persists"
   ]
 }
 
 ```
 
-## Testing
+---
+
+## 📂 Project Structure
+
+```
+housemd/
+├── .github/
+│   └── workflows/
+│       └── sync_to_hf.yml      # CI/CD deployment pipeline
+├── data/
+│   └── medical_reference.txt   # 36 indexed clinical reference guidelines & protocols
+├── src/
+│   ├── api.py                  # FastAPI routes, lifecycle management & middleware
+│   ├── database.py             # ChromaDB vector store initialization & querying
+│   ├── engine.py               # Dual-tier RAG prompt construction & model failover cascade
+│   └── schema.py               # Pydantic data contracts & triage enumerations
+├── app.py                      # Streamlit frontend web application
+├── Dockerfile                  # Container definition for Render / cloud deployment
+├── requirements.txt            # Python dependencies
+└── test_engine.py              # Modular test suite for diagnostic pipeline
+
+```
+
+---
+
+## 🧪 Testing
+
+Run the isolated testing pipeline without modifying persistent database state:
 
 ```bash
 python -m test_engine
 
 ```
 
-## Configuration
+---
 
-Set your environment variables in your active shell session or `.env` file:
+## 🌐 Cloud Deployment Architecture
 
-```bash
-GEMINI_API_KEY="your_actual_gemini_api_key_here"
-PORT=8000
+* **Backend Web Service:** FastAPI + ChromaDB deployed on **Render** (via custom Dockerfile).
+* **Frontend Web Application:** Streamlit UI deployed on **Streamlit Community Cloud**.
+* **Inter-Service Communication:** Streamlit connects to Render via the `BACKEND_URL` secret.
 
-```
+---
 
-## Project Structure
+## 🚨 Disclaimer & Research Notice
 
-```
-housemd/
-├── .github/
-│   └── workflows/
-│       └── sync_to_hf.yml      # CI/CD Hugging Face deployment pipeline
-├── data/
-│   └── medical_reference.txt   # Indexed clinical guidelines & triage rules
-├── src/
-│   ├── api.py                  # FastAPI routes, lifecycle management & validation
-│   ├── database.py             # ChromaDB vector store & SentenceTransformers embeddings
-│   ├── engine.py               # RAG prompt construction & 10-model fallback cascade
-│   └── schema.py               # Pydantic models & triage enumerations
-├── Dockerfile                  # Container definition for HF Spaces & cloud hosting
-├── requirements.txt            # Python dependencies
-└── test_engine.py              # Standalone diagnostic pipeline test
+> **RESEARCH PROTOTYPE ONLY:** HouseMD AI Engine (AegisMed) is an experimental software proof-of-concept created strictly for software benchmarking, research evaluation, and technical demonstrations. It is **NOT** a certified medical device and must **NEVER** be used for active patient care, diagnosis, or triage during live clinical emergencies.
 
-```
+---
 
-## Management
-
-```bash
-# Start (foreground)
-uvicorn src.api:app --host 0.0.0.0 --port 8000 --reload
-
-# Start (background)
-nohup uvicorn src.api:app --host 0.0.0.0 --port 8000 > server.log 2>&1 &
-
-# Stop
-lsof -ti:8000 | xargs kill -9
-
-# Logs
-tail -f server.log
-
-```
-
-## Troubleshooting
-
-**Port in use:** `lsof -ti:8000 | xargs kill -9`
-
-**Import errors:** `export PYTHONPATH=$(pwd):$PYTHONPATH`
-
-**Missing API Key:** Verify that `GEMINI_API_KEY` is correctly exported in your environment.
-
-## License
+## 📜 License
 
 Copyright (c) 2026 HouseMD Team. All rights reserved.
 
