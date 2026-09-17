@@ -16,7 +16,7 @@
   <b>A zero-hallucination Clinical Decision Support System (CDSS) designed for Emergency Departments, Rural Diagnostic Centers, and Mass Casualty Incidents.</b>
 </p>
 
-[Key Features](#-key-features) • [System Architecture](#-system-architecture) • [36 Clinical Guidelines](#-indexed-clinical-guidelines-36-conditions) • [Quick Start](#-quick-start) • [API Documentation](#-api-documentation)
+[Key Features](#-key-features) • [System Architecture](#-system-architecture) • [36 Clinical Guidelines](#-indexed-clinical-guidelines-36-conditions) • [Quick Start](#-quick-start) • [API Documentation](#-api-documentation) • [License](#-license)
 
 </div>
 
@@ -44,33 +44,28 @@ High-stress clinical triage requires **absolute diagnostic precision** for criti
 
 ## 🏗️ System Architecture
 
-
-```
-
-```
-                           ┌──────────────────────────────────┐
-                           │  Incoming Clinical Presentation   │
-                           └────────────────┬─────────────────┘
-                                            │
-                                            ▼
-                               ┌──────────────────────────┐
-                               │  ChromaDB Vector Query   │
-                               └────────────┬─────────────┘
-                                            │
-                  ┌─────────────────────────┴─────────────────────────┐
-                  ▼                                                   ▼
-     [ Match Found in Vector Index ]                    [ No Match Found / Stable ]
-     (36 Pre-Indexed Guidelines)                       (Unindexed Presentation)
-                  │                                                   │
-                  ▼                                                   ▼
-   ┌──────────────────────────────┐                   ┌──────────────────────────────┐
-   │   TIER 1: STRICT GROUNDING    │                   │   TIER 2: GENERAL FALLBACK   │
-   │  • Zero-Hallucination Rule   │                   │  • Foundation Model Reasoning│
-   │  • Grounded Step-by-Step Plan│                   │  • Flagged as General Case   │
-   │  • High-Priority Action      │                   │  • Lower Triage Priority     │
-   └──────────────────────────────┘                   └──────────────────────────────┘
-
-```
+```text
+                               ┌──────────────────────────────────┐
+                               │  Incoming Clinical Presentation   │
+                               └────────────────┬─────────────────┘
+                                                │
+                                                ▼
+                                   ┌──────────────────────────┐
+                                   │  ChromaDB Vector Query   │
+                                   └────────────┬─────────────┘
+                                                │
+                      ┌─────────────────────────┴─────────────────────────┐
+                      ▼                                                   ▼
+         [ Match Found in Vector Index ]                    [ No Match Found / Stable ]
+         (36 Pre-Indexed Guidelines)                       (Unindexed Presentation)
+                      │                                                   │
+                      ▼                                                   ▼
+       ┌──────────────────────────────┐                   ┌──────────────────────────────┐
+       │   TIER 1: STRICT GROUNDING    │                   │   TIER 2: GENERAL FALLBACK   │
+       │  • Zero-Hallucination Rule   │                   │  • Foundation Model Reasoning│
+       │  • Grounded Step-by-Step Plan│                   │  • Flagged as General Case   │
+       │  • High-Priority Action      │                   │  • Lower Triage Priority     │
+       └──────────────────────────────┘                   └──────────────────────────────┘
 
 ```
 
@@ -81,7 +76,7 @@ High-stress clinical triage requires **absolute diagnostic precision** for criti
 The vector repository (`data/medical_reference.txt`) indexes 36 high-yield emergency conditions complete with diagnostic triggers and step-by-step immediate treatment protocols:
 
 | Category | Indexed Emergency Conditions |
-| :--- | :--- |
+| --- | --- |
 | **Cardiovascular & Cerebrovascular** | Acute Ischemic/Hemorrhagic Stroke, Acute Coronary Syndrome (STEMI/NSTEMI), Acute Pulmonary Embolism, Hypertensive Emergency, Acute Decompensated Heart Failure |
 | **Trauma & Resuscitation** | Traumatic Hemorrhagic Shock, Polytrauma / Road Traffic Accident, Traumatic Brain Injury (TBI/EDH), Tension Pneumothorax, Cardiac Arrest (ACLS), Drowning Asphyxia |
 | **Toxico-Environmental** | Organophosphate Toxicity, Paracetamol Overdose, Benzodiazepine Overdose, Aluminum Phosphide (Rice Tablet), Methanol Poisoning, Carbon Monoxide Poisoning, Heat Stroke, Snakebite Envenomation |
@@ -195,5 +190,11 @@ aegismed-ai-engine/
 ## ⚠️ Research Disclaimer
 
 > **RESEARCH PROTOTYPE ONLY:** AegisMed AI Engine (HouseMD) is an experimental software proof-of-concept created strictly for technical demonstration, software benchmarking, and academic research evaluation. It is **NOT** a certified medical device and must **NEVER** be used for active patient care, diagnosis, or triage during real clinical emergencies.
+
+---
+
+## 📜 License
+
+Copyright (c) 2026 Mahin Shahriar. All rights reserved.
 
 ---
