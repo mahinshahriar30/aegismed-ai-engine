@@ -1,17 +1,17 @@
-import os
 import logging
+import os
 from typing import List
 from google import genai
 from google.genai import types
-from src.schema import AegisMedAuditResponse
 from src.database import query_medical_kb
+from src.schema import AegisMedAuditResponse
 
-# Suppress harmless SDK info logs
+# Suppress harmless SDK logs
 logging.getLogger("google_genai").setLevel(logging.ERROR)
 
 api_key = os.getenv("GEMINI_API_KEY")
 if not api_key:
-    raise ValueError("GEMINI_API_KEY environment variable is missing!")
+  raise ValueError("GEMINI_API_KEY environment variable is missing!")
 
 client = genai.Client(api_key=api_key)
 
@@ -38,25 +38,21 @@ TRIAGE LEVEL CLASSIFICATION:
 - STABLE: Non-emergent, routine clinical management or non-critical presentations outside disaster scope.
 """
 
-# Ordered list of 10 fast and reliable models from your available list
+# Valid production Gemini models in order of speed & reasoning quality
 PREFERRED_MODELS: List[str] = [
     "gemini-2.5-flash",
-    "gemini-3.6-flash",
-    "gemini-3.5-flash",
     "gemini-2.5-pro",
-    "gemini-3.7-flash",
-    "gemini-2.5-flash-lite",
-    "gemini-3.1-pro-preview",
-    "gemini-3.1-flash-lite",
-    "gemini-flash-latest",
-    "gemini-pro-latest"
+    "gemini-2.0-flash",
+    "gemini-1.5-flash",
+    "gemini-1.5-pro",
 ]
 
+
 def diagnose_patient(document_text: str) -> AegisMedAuditResponse:
-    # 1. Retrieve guidelines from ChromaDB
-    retrieved_context = query_medical_kb(document_text, n_results=3)
-    
-    context_prompt = f"""
+  # 1. Retrieve guidelines from vector DB
+  retrieved_context = query_medical_kb(document_text, n_results=3)
+
+  context_prompt = f"""
     [RETRIEVED CLINICAL GUIDELINES & REFERENCE DATA]
     {retrieved_context}
 
@@ -64,30 +60,33 @@ def diagnose_patient(document_text: str) -> AegisMedAuditResponse:
     {document_text}
     """
 
-    last_error = None
+  last_error = None
 
-    # 2. Resilient Failover Loop across all 10 models
-    for model_name in PREFERRED_MODELS:
-        try:
-            response = client.models.generate_content(
-                model=model_name,
-                contents=context_prompt,
-                config=types.GenerateContentConfig(
-                    system_instruction=SYSTEM_INSTRUCTION,
-                    response_mime_type="application/json",
-                    response_schema=AegisMedAuditResponse,
-                    temperature=0.1
-                )
-            )
-            
-            # Parse and return structured response
-            return AegisMedAuditResponse.model_validate_json(response.text)
+  # 2. Resilient Failover Loop across valid models
+  for model_name in PREFERRED_MODELS:
+    try:
+      response = client.models.generate_content(
+          model=model_name,
+          contents=context_prompt,
+          config=types.GenerateContentConfig(
+              system_instruction=SYSTEM_INSTRUCTION,
+              response_mime_type="application/json",
+              response_schema=AegisMedAuditResponse,
+              temperature=0.1,
+          ),
+      )
 
-        except Exception as err:
-            last_error = err
-            print(f"⚠️ Model '{model_name}' failed ({type(err).__name__}). Trying next fallback model...")
-            continue
+      # Validate and return Pydantic schema
+      return AegisMedAuditResponse.model_validate_json(response.text)
 
-    # 3. If all 10 model fallbacks fail
-    print("❌ All 10 model fallbacks failed.")
-    raise last_error
+    except Exception as err:
+      last_error = err
+      print(
+          f"⚠️ Model '{model_name}' failed ({type(err).__name__}: {err}). Trying"
+          " next fallback model..."
+      )
+      continue
+
+  # 3. If all model fallbacks fail
+  print(f"❌ All model fallbacks failed. Last error: {last_error}")
+  raise last_error
