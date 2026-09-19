@@ -7,17 +7,18 @@ from src.database import query_medical_kb
 from src.schema import AegisMedAuditResponse
 
 # 10 High-Availability Gemini Models (Ordered by Speed & Reliability)
+# Updated 10 High-Availability Production Gemini Models
 GEMINI_CASCADE_MODELS = [
     "gemini-2.5-flash",
+    "gemini-2.5-pro",
     "gemini-2.0-flash",
     "gemini-1.5-flash",
-    "gemini-2.5-pro",
+    "gemini-1.5-pro",
     "gemini-2.0-flash-lite",
     "gemini-1.5-flash-8b",
-    "gemini-1.5-pro",
     "gemini-1.0-pro",
-    "gemini-2.0-pro-exp-02-05",
-    "gemini-2.5-flash-lite",
+    "gemini-2.5-flash-preview-09-2025",
+    "gemini-2.0-flash-exp",
 ]
 
 
