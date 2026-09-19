@@ -1,0 +1,34 @@
+name: Streamlit Keep-Alive Cron
+
+on:
+  schedule:
+    # Runs every day at 00:00 UTC (keeps Streamlit active well within its inactivity window)
+    - cron: '0 0 * * *'
+  workflow_dispatch: # Allows you to manually trigger it anytime from the GitHub interface
+
+jobs:
+  ping-streamlit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Streamlit App via Playwright Browser
+        run: |
+          npm install playwright
+          npx playwright install chromium
+          node -e "
+          const { chromium } = require('playwright');
+          (async () => {
+            const browser = await chromium.launch();
+            const page = await browser.newPage();
+            console.log('Opening Streamlit app session...');
+            
+            // Replace with your actual Streamlit App URL
+            const targetUrl = 'https://aegismed-ai-engine-3peyn7pylqupgp2rbdxzwm.streamlit.app/'; 
+            
+            await page.goto(targetUrl, { waitUntil: 'networkidle', timeout: 60000 });
+            console.log('Page loaded. Holding WebSocket session open for 15 seconds...');
+            await page.waitForTimeout(15000); 
+            
+            console.log('Streamlit session successfully refreshed!');
+            await browser.close();
+          })();
+          "
