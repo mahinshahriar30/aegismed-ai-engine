@@ -39,18 +39,18 @@ TRIAGE LEVEL CLASSIFICATION:
 """
 
 # Backup list of verified Gemini 3.x series models
-STATIC_FALLBACK_POOL: List[str] = [
-    "gemini-3.6-flash",
-    "gemini-3.5-flash",
-    "gemini-3.5-flash-lite",
-    "gemini-3.1-pro-preview",
-    "gemini-3.1-flash-preview",
-    "gemini-3.0-flash",
-    "gemini-3.0-pro",
-    "gemini-2.5-flash",
-    "gemini-2.5-pro",
-    "gemini-2.0-flash"
-]
+# STATIC_FALLBACK_POOL: List[str] = [
+#     "gemini-3.6-flash",
+#     "gemini-3.5-flash",
+#     "gemini-3.5-flash-lite",
+#     "gemini-3.1-pro-preview",
+#     "gemini-3.1-flash-preview",
+#     "gemini-3.0-flash",
+#     "gemini-3.0-pro",
+#     "gemini-2.5-flash",
+#     "gemini-2.5-pro",
+#     "gemini-2.0-flash"
+# ]
 
 def get_exact_10_valid_models() -> List[str]:
     """Dynamically queries the API for active text models and selects exactly 10 valid candidates."""
