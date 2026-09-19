@@ -7,11 +7,11 @@ from fastapi.security import APIKeyHeader
 import httpx
 from pydantic import BaseModel
 
-# Imports matching your exact codebase
+# Internal Imports
 from src.engine import diagnose_patient
 from src.schema import AegisMedAuditResponse
 
-# 1. Configuration & Security Setup
+# 1. Security & Environment Configuration
 API_KEY_NAME = "X-API-Key"
 api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
 
@@ -26,8 +26,8 @@ class DiagnoseRequest(BaseModel):
 
 
 async def keep_alive_loop():
-  """Background task to ping /health every 4 minutes to prevent Render free-tier sleeping."""
-  await asyncio.sleep(15)  # Quick initial delay on startup
+  """Background task sending a GET /health ping every 4 minutes to prevent Render sleep mode."""
+  await asyncio.sleep(15)  # Brief initial boot pause
 
   async with httpx.AsyncClient() as client:
     while True:
@@ -41,26 +41,23 @@ async def keep_alive_loop():
       except Exception as e:
         print(f"[Keep-Alive] Heartbeat ping failed: {e}")
 
-      # Ping every 240 seconds (4 minutes)
+      # Ping every 4 minutes (240 seconds)
       await asyncio.sleep(240)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-  """Application lifecycle manager to initialize background keep-alive loop."""
+  """Lifecycle manager to handle heartbeat initialization and shutdown tasks."""
   print("Starting AegisMed AI Engine microservice...")
-
-  # Start background keep-alive task
   keep_alive_task = asyncio.create_task(keep_alive_loop())
 
   yield
 
-  # Cleanup on shutdown
   keep_alive_task.cancel()
   print("Shutting down AegisMed AI Engine microservice...")
 
 
-# 2. Instantiate FastAPI Application
+# 2. Instantiate FastAPI App
 app = FastAPI(
     title="AegisMed AI Engine - HouseMD Microservice",
     description=(
@@ -81,7 +78,7 @@ app.add_middleware(
 )
 
 
-# 4. Authentication Middleware Dependency
+# 4. Authentication Middleware
 async def verify_api_key(api_key: str = Security(api_key_header)):
   if api_key != EXPECTED_API_KEY:
     raise HTTPException(
@@ -91,10 +88,10 @@ async def verify_api_key(api_key: str = Security(api_key_header)):
   return api_key
 
 
-# 5. Core API Endpoints
+# 5. Core Endpoints
 @app.get("/health", status_code=status.HTTP_200_OK)
 async def health_check():
-  """Health check endpoint used by Render load balancer and keep-alive loop."""
+  """Health check endpoint used by uptime monitors and keep-alive heartbeat."""
   return {
       "status": "healthy",
       "service": "AegisMed AI Engine",
