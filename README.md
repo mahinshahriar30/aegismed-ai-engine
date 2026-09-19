@@ -1,3 +1,4 @@
+
 <div align="center">
 
 # 🏥 AegisMed AI Engine (HouseMD)
@@ -38,7 +39,7 @@ High-stress clinical triage requires **absolute diagnostic precision** for criti
 * 🎯 **Dual-Tier Zero-Hallucination Engine:** Guarantees strict guideline compliance for critical emergencies (`CRITICAL_EMERGENCY` / `HIGH_PRIORITY`).
 * 🩺 **Physician-Reviewed Knowledge Base:** `data/medical_reference.txt` protocols are curated and verified by real medical doctors for clinical accuracy during critical emergencies.
 * ⚡ **36 High-Yield Regional Guidelines:** Pre-indexed emergency protocols tailored for acute trauma, toxicology, stroke, sepsis, and tropical infectious disasters.
-* 🛡️ **Resilient 10-Model Failover Cascade:** Automatically cycles through a fallback sequence of Google Gemini models to handle rate limits and API outages seamlessly.
+* 🛡️ **Multi-Model High-Availability Cascade:** Automatically cycles through a priority failover sequence of Google Gemini models (`gemini-3.6-flash`, `gemini-3.5-flash-lite`, `gemini-3.1-pro-preview`) to handle rate limits and API outages seamlessly.
 * 🔒 **Header-Based Authentication:** Core API endpoints secured with `X-API-Key` validation.
 * ⚡ **Sleep-Proof Infrastructure:** Continuous keep-alive heartbeat (`/health` endpoint pinged via external uptime monitor) prevents cold starts on free-tier container deployments.
 * 📋 **Strict Type Enforcement:** Native GenAI schema binding with Pydantic (`AegisMedAuditResponse`) ensures 100% reliable JSON output for EHR integration.
@@ -56,7 +57,7 @@ High-stress clinical triage requires **absolute diagnostic precision** for criti
              │ CORS / X-API-Key                           │
              ▼                                            ▼
  ┌────────────────────────┐              ┌──────────────────────────────────┐
- │ Render Docker Backend  │─────────────>│       ChromaDB Vector Query      │
+ │ Render Docker Backend  │─────────────>│     ChromaDB Vector Query        │
  │  (FastAPI Microservice)│              └────────────────┬─────────────────┘
  └────────────────────────┘                               │
                                   ┌───────────────────────┴───────────────────────┐
@@ -207,7 +208,7 @@ aegismed-ai-engine/
 ├── src/
 │   ├── api.py                 # FastAPI microservice, CORS policy & keep-alive loop
 │   ├── database.py            # ChromaDB persistent vector database manager
-│   ├── engine.py              # Dual-tier prompt engine & 10-model failover cascade
+│   ├── engine.py              # Dual-tier prompt engine & multi-model failover cascade
 │   ├── index.html             # Netlify single-page application frontend
 │   └── schema.py              # Pydantic contracts & triage data enums
 ├── .env                       # Local environment variables configuration
@@ -233,3 +234,4 @@ aegismed-ai-engine/
 Copyright (c) 2026 Mahin Shahriar. All rights reserved.
 
 ```
+
