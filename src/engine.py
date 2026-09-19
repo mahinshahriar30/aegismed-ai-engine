@@ -1,6 +1,10 @@
+import json
 import os
 from google import genai
 from google.genai import types
+
+from src.database import query_medical_kb
+from src.schema import AegisMedAuditResponse
 
 # 10 High-Availability Gemini Models (Ordered by Speed & Reliability)
 GEMINI_CASCADE_MODELS = [
@@ -28,7 +32,7 @@ def generate_clinical_audit(prompt: str, client: genai.Client, response_schema):
     for model_name in GEMINI_CASCADE_MODELS:
         try:
             print(f"[Engine] Attempting generation with model: {model_name}")
-            
+
             response = client.models.generate_content(
                 model=model_name,
                 contents=prompt,
@@ -49,3 +53,36 @@ def generate_clinical_audit(prompt: str, client: genai.Client, response_schema):
     raise RuntimeError(
         f"All 10 models in the failover cascade failed. Last error: {last_exception}"
     )
+
+
+def diagnose_patient(document_text: str) -> AegisMedAuditResponse:
+    """Wrapper function invoked by api.py to process a patient presentation
+
+    through RAG guideline retrieval and the model failover cascade.
+    """
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        raise ValueError("GEMINI_API_KEY environment variable is required.")
+
+    # 1. Instantiate Google GenAI Client
+    client = genai.Client(api_key=api_key)
+
+    # 2. Retrieve matched clinical guidelines from ChromaDB RAG
+    rag_context = query_medical_kb(document_text)
+
+    # 3. Construct the clinical audit prompt
+    prompt = (
+        f"VERIFIED CLINICAL GUIDELINES:\n{rag_context}\n\n"
+        f"PATIENT PRESENTATION:\n{document_text}\n\n"
+        "Provide a complete clinical audit in structured JSON matching the requested schema."
+    )
+
+    # 4. Execute LLM cascade call
+    response = generate_clinical_audit(
+        prompt=prompt,
+        client=client,
+        response_schema=AegisMedAuditResponse,
+    )
+
+    # 5. Parse and return structured response
+    return AegisMedAuditResponse.model_validate_json(response.text)
