@@ -1,10 +1,10 @@
 import asyncio
 from contextlib import asynccontextmanager
 import os
-import httpx
 from fastapi import FastAPI, HTTPException, Security, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import APIKeyHeader
+import httpx
 from pydantic import BaseModel
 
 # Imports matching your exact codebase
@@ -16,7 +16,9 @@ API_KEY_NAME = "X-API-Key"
 api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
 
 EXPECTED_API_KEY = os.getenv("AEGIS_API_KEY", "aegismed_secure_key_2026")
-RENDER_EXTERNAL_URL = os.getenv("RENDER_EXTERNAL_URL", "")
+RENDER_EXTERNAL_URL = os.getenv(
+    "RENDER_EXTERNAL_URL", "https://aegismed-ai-engine-2.onrender.com"
+)
 
 
 class DiagnoseRequest(BaseModel):
@@ -24,17 +26,13 @@ class DiagnoseRequest(BaseModel):
 
 
 async def keep_alive_loop():
-  """Background task to ping /health every 10 minutes to prevent Render free-tier sleeping."""
-  await asyncio.sleep(30)  # Initial wait before starting heartbeat
+  """Background task to ping /health every 4 minutes to prevent Render free-tier sleeping."""
+  await asyncio.sleep(15)  # Quick initial delay on startup
 
   async with httpx.AsyncClient() as client:
     while True:
       try:
-        target_url = (
-            f"{RENDER_EXTERNAL_URL}/health"
-            if RENDER_EXTERNAL_URL
-            else "http://127.0.0.1:8000/health"
-        )
+        target_url = f"{RENDER_EXTERNAL_URL.rstrip('/')}/health"
         response = await client.get(target_url, timeout=10.0)
         print(
             f"[Keep-Alive] Heartbeat ping sent to {target_url} - Status:"
@@ -43,7 +41,8 @@ async def keep_alive_loop():
       except Exception as e:
         print(f"[Keep-Alive] Heartbeat ping failed: {e}")
 
-      await asyncio.sleep(600)  # Ping every 10 minutes
+      # Ping every 240 seconds (4 minutes)
+      await asyncio.sleep(240)
 
 
 @asynccontextmanager
@@ -109,7 +108,9 @@ async def health_check():
     response_model=AegisMedAuditResponse,
     status_code=status.HTTP_200_OK,
 )
-async def analyze_clinical_presentation(request: DiagnoseRequest):
+async def analyze_clinical_presentation(
+    request: DiagnoseRequest, api_key: str = Security(verify_api_key)
+):
   """Primary endpoint to execute clinical triage against ChromaDB RAG guidelines."""
   try:
     audit_result = diagnose_patient(document_text=request.document_text)
