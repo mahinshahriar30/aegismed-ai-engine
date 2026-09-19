@@ -1,11 +1,11 @@
-
 <div align="center">
 
 # 🏥 AegisMed AI Engine (HouseMD)
 ### *Deterministic Dual-Tier Mass Casualty & Emergency Clinical Triage Framework*
 
-[![Live Demo](https://img.shields.io/badge/🚀_Live_App-Streamlit_Cloud-FF4B4B?style=for-the-badge)](https://aegismed-ai-engine-3peyn7pylqupgp2rbdxzwm.streamlit.app/)
+[![Live Demo](https://img.shields.io/badge/🚀_Live_App-Netlify_CDN-00C7B7?style=for-the-badge&logo=netlify&logoColor=white)](https://housemdai.netlify.app)
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Docker](https://img.shields.io/badge/Docker_Container-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
 [![ChromaDB](https://img.shields.io/badge/ChromaDB-FF6F00?style=for-the-badge&logo=chromadb&logoColor=white)](https://www.trychroma.com/)
 [![Google Gemini](https://img.shields.io/badge/Google_Gemini-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
 [![Render](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://render.com/)
@@ -13,7 +13,8 @@
 ---
 
 <p align="center">
-  <b>A zero-hallucination Clinical Decision Support System (CDSS) designed for Emergency Departments, Rural Diagnostic Centers, and Mass Casualty Incidents.</b>
+  <b>A zero-hallucination Clinical Decision Support System (CDSS) designed for Emergency Departments, Rural Diagnostic Centers, and Mass Casualty Incidents.</b><br>
+  👉 <b>Live Application:</b> <a href="https://housemdai.netlify.app">housemdai.netlify.app</a>
 </p>
 
 [Key Features](#-key-features) • [System Architecture](#-system-architecture) • [36 Clinical Guidelines](#-indexed-clinical-guidelines-36-conditions) • [Quick Start](#-quick-start) • [API Documentation](#-api-documentation) • [License](#-license)
@@ -27,7 +28,7 @@
 High-stress clinical triage requires **absolute diagnostic precision** for critical life-threatening conditions, paired with **flexible reasoning** for non-standard presentations. Standard LLM approaches carry risks of hallucinations or ungrounded recommendations during emergencies.
 
 **AegisMed AI Engine** solves this with a **Dual-Tier RAG Architecture**:
-1. **Tier 1 (Strict Grounding):** Forces zero-hallucination compliance against **36 pre-indexed clinical emergency guidelines** stored in ChromaDB.
+1. **Tier 1 (Strict Grounding):** Forces zero-hallucination compliance against **36 doctor-verified clinical emergency guidelines** stored in ChromaDB.
 2. **Tier 2 (General Fallback):** Safely falls back to foundation model reasoning for unindexed presentations, clearly labeling them as general assessments.
 
 ---
@@ -35,37 +36,41 @@ High-stress clinical triage requires **absolute diagnostic precision** for criti
 ## ✨ Key Features
 
 * 🎯 **Dual-Tier Zero-Hallucination Engine:** Guarantees strict guideline compliance for critical emergencies (`CRITICAL_EMERGENCY` / `HIGH_PRIORITY`).
+* 🩺 **Physician-Reviewed Knowledge Base:** `data/medical_reference.txt` protocols are curated and verified by real medical doctors for clinical accuracy during critical emergencies.
 * ⚡ **36 High-Yield Regional Guidelines:** Pre-indexed emergency protocols tailored for acute trauma, toxicology, stroke, sepsis, and tropical infectious disasters.
 * 🛡️ **Resilient 10-Model Failover Cascade:** Automatically cycles through a fallback sequence of Google Gemini models to handle rate limits and API outages seamlessly.
+* 🔒 **Header-Based Authentication:** Core API endpoints secured with `X-API-Key` validation.
+* ⚡ **Sleep-Proof Infrastructure:** Continuous keep-alive heartbeat (`/health` endpoint pinged via external uptime monitor) prevents cold starts on free-tier container deployments.
 * 📋 **Strict Type Enforcement:** Native GenAI schema binding with Pydantic (`AegisMedAuditResponse`) ensures 100% reliable JSON output for EHR integration.
-* 🌐 **Production Ready:** Microservice backend hosted on **Render** paired with a responsive **Streamlit** frontend dashboard.
+* 🌐 **Production Decoupled Setup:** High-performance static web app hosted on **Netlify CDN** paired with a containerized **Render Docker** backend microservice.
 
 ---
 
 ## 🏗️ System Architecture
 
 ```text
-                               ┌──────────────────────────────────┐
-                               │  Incoming Clinical Presentation   │
-                               └────────────────┬─────────────────┘
-                                                │
-                                                ▼
-                                   ┌──────────────────────────┐
-                                   │  ChromaDB Vector Query   │
-                                   └────────────┬─────────────┘
-                                                │
-                      ┌─────────────────────────┴─────────────────────────┐
-                      ▼                                                   ▼
-         [ Match Found in Vector Index ]                    [ No Match Found / Stable ]
-         (36 Pre-Indexed Guidelines)                       (Unindexed Presentation)
-                      │                                                   │
-                      ▼                                                   ▼
-       ┌──────────────────────────────┐                   ┌──────────────────────────────┐
-       │   TIER 1: STRICT GROUNDING    │                   │   TIER 2: GENERAL FALLBACK   │
-       │  • Zero-Hallucination Rule   │                   │  • Foundation Model Reasoning│
-       │  • Grounded Step-by-Step Plan│                   │  • Flagged as General Case   │
-       │  • High-Priority Action      │                   │  • Lower Triage Priority     │
-       └──────────────────────────────┘                   └──────────────────────────────┘
+ ┌────────────────────────┐              ┌──────────────────────────────────┐
+ │  Netlify CDN Frontend  │              │  Incoming Clinical Presentation   │
+ │   (src/index.html)     │              └────────────────┬─────────────────┘
+ └───────────┬────────────┘                               │
+             │ CORS / X-API-Key                           │
+             ▼                                            ▼
+ ┌────────────────────────┐              ┌──────────────────────────────────┐
+ │ Render Docker Backend  │─────────────>│       ChromaDB Vector Query      │
+ │  (FastAPI Microservice)│              └────────────────┬─────────────────┘
+ └────────────────────────┘                               │
+                                  ┌───────────────────────┴───────────────────────┐
+                                  ▼                                               ▼
+                     [ Match Found in Vector Index ]                 [ No Match Found / Stable ]
+                     (36 Doctor-Reviewed Guidelines)                 (Unindexed Presentation)
+                                  │                                               │
+                                  ▼                                               ▼
+                   ┌──────────────────────────────┐                ┌──────────────────────────────┐
+                   │   TIER 1: STRICT GROUNDING   │                │   TIER 2: GENERAL FALLBACK   │
+                   │  • Zero-Hallucination Rule   │                │  • Foundation Model Reasoning│
+                   │  • Grounded Step-by-Step Plan│                │  • Flagged as General Case   │
+                   │  • High-Priority Action      │                │  • Lower Triage Priority     │
+                   └──────────────────────────────┘                └──────────────────────────────┘
 
 ```
 
@@ -73,7 +78,7 @@ High-stress clinical triage requires **absolute diagnostic precision** for criti
 
 ## 📚 Indexed Clinical Guidelines (36 Conditions)
 
-The vector repository (`data/medical_reference.txt`) indexes 36 high-yield emergency conditions complete with diagnostic triggers and step-by-step immediate treatment protocols:
+> 🩺 **Medical Review Note:** All 36 clinical reference protocols in `data/medical_reference.txt` have been rigorously curated and reviewed by practicing emergency physicians to ensure adherence to standard acute care, resuscitation, and toxicological guidelines.
 
 | Category | Indexed Emergency Conditions |
 | --- | --- |
@@ -105,39 +110,66 @@ pip install -r requirements.txt
 
 ### 2. Configure Environment Variables
 
-Create a `.env` file or export variables in your active shell:
+Create a `.env` file in the project root:
 
-```bash
-export GEMINI_API_KEY="your_google_gemini_api_key_here"
-export PORT=8000
-
-```
-
-### 3. Launch Services Locally
-
-```bash
-# Start FastAPI Backend
-uvicorn src.api:app --host 0.0.0.0 --port 8000 --reload
-
-# Start Streamlit Frontend (In a new terminal window)
-streamlit run app.py
+```env
+GEMINI_API_KEY="your_google_gemini_api_key_here"
+AEGIS_API_KEY="aegismed_secure_key_2026"
+PORT=10000
 
 ```
 
-> **Interactive API Docs:** Access Swagger UI at `http://localhost:8000/docs`
+### 3. Run via Docker Locally
+
+```bash
+# Build Docker container
+docker build -t aegismed-ai-engine .
+
+# Run container
+docker run -p 10000:10000 --env-file .env aegismed-ai-engine
+
+```
+
+> **Interactive API Docs:** Access Swagger UI at `http://localhost:10000/docs`
 
 ---
 
 ## 📡 API Documentation
 
-### `POST /api/v1/diagnose`
+### 1. Health Check & Heartbeat (Unauthenticated)
 
-**Sample Request:**
+```http
+GET /health
+
+```
+
+**Response:**
 
 ```json
 {
-  "document_text": "EMERGENCY PRESENTATION: 28-year-old agricultural worker presenting with sudden pinpoint pupils (miosis), profuse salivation, vomiting, wheezing, and bradycardia (HR 48 bpm, BP 85/55 mmHg) after crop spraying.",
-  "domain": "medical"
+  "status": "healthy",
+  "service": "AegisMed AI Engine",
+  "version": "2.0.0",
+  "rag_status": "initialized"
+}
+
+```
+
+### 2. Clinical Diagnosis Audit
+
+```http
+POST /api/v1/diagnose
+Headers:
+  X-API-Key: aegismed_secure_key_2026
+  Content-Type: application/json
+
+```
+
+**Sample Request Body:**
+
+```json
+{
+  "document_text": "EMERGENCY PRESENTATION: 28-year-old agricultural worker presenting with sudden pinpoint pupils (miosis), profuse salivation, vomiting, wheezing, and bradycardia (HR 48 bpm, BP 85/55 mmHg) after crop spraying."
 }
 
 ```
@@ -170,17 +202,20 @@ streamlit run app.py
 
 ```text
 aegismed-ai-engine/
-├── .github/workflows/         # CI/CD deployment automation
 ├── data/
-│   └── medical_reference.txt  # 36 pre-indexed clinical guidelines & protocols
+│   └── medical_reference.txt  # 36 doctor-reviewed clinical emergency guidelines
 ├── src/
-│   ├── api.py                 # FastAPI routes, middleware & lifecycle handlers
-│   ├── database.py            # ChromaDB vector database manager
-│   ├── engine.py              # Dual-tier prompt builder & 10-model failover cascade
-│   └── schema.py              # Pydantic data contracts & triage enums
-├── app.py                     # Streamlit web application interface
-├── Dockerfile                 # Container definition for cloud deployment
-├── requirements.txt           # Python package dependencies
+│   ├── api.py                 # FastAPI microservice, CORS policy & keep-alive loop
+│   ├── database.py            # ChromaDB persistent vector database manager
+│   ├── engine.py              # Dual-tier prompt engine & 10-model failover cascade
+│   ├── index.html             # Netlify single-page application frontend
+│   └── schema.py              # Pydantic contracts & triage data enums
+├── .env                       # Local environment variables configuration
+├── .gitignore                 # Exclusion rules for secrets & build outputs
+├── Dockerfile                 # Multi-stage security-hardened non-root Docker build
+├── netlify.toml               # Netlify CDN deployment & security headers config
+├── requirements.txt           # Core Python dependencies
+├── test_db.py                 # Vector DB retrieval integration test
 └── test_engine.py             # Diagnostic pipeline unit test suite
 
 ```
@@ -197,4 +232,4 @@ aegismed-ai-engine/
 
 Copyright (c) 2026 Mahin Shahriar. All rights reserved.
 
----
+```
