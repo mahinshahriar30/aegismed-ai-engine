@@ -6,21 +6,18 @@ from google.genai import types
 from src.database import query_medical_kb
 from src.schema import AegisMedAuditResponse
 
-# 10 High-Availability Gemini Models (Ordered by Speed & Reliability)
-# Updated 10 High-Availability Production Gemini Models
-# Guaranteed Active Models
+# Active Gemini 3.x production model endpoints
 GEMINI_CASCADE_MODELS = [
-    "gemini-2.5-flash",
-    "gemini-2.5-pro",
-    "gemini-2.5-flash-lite",
+    "gemini-3.6-flash",
+    "gemini-3.5-flash-lite",
+    "gemini-3.1-pro-preview",
 ]
 
 
 def generate_clinical_audit(prompt: str, client: genai.Client, response_schema):
-    """Executes clinical analysis directly using the fastest model in the cascade.
+    """Executes clinical analysis using current Gemini 3.x endpoints.
 
-    Automatically fails over to backup models on rate-limits, timeouts, or quota errors.
-    Zero extra discovery latency.
+    Fails over seamlessly without legacy parameters.
     """
     last_exception = None
 
@@ -34,50 +31,45 @@ def generate_clinical_audit(prompt: str, client: genai.Client, response_schema):
                 config=types.GenerateContentConfig(
                     response_mime_type="application/json",
                     response_schema=response_schema,
-                    temperature=0.1,  # Low variance for clinical determinism
                 ),
             )
             print(f"[Engine] Successfully generated audit using model: {model_name}")
             return response
 
         except Exception as e:
-            print(f"[Engine] Model '{model_name}' failed or rate-limited: {e}. Falling over...")
+            print(f"[Engine] Model '{model_name}' failed: {e}. Falling over...")
             last_exception = e
             continue
 
     raise RuntimeError(
-        f"All 10 models in the failover cascade failed. Last error: {last_exception}"
+        f"All models in the failover cascade failed. Last error: {last_exception}"
     )
 
 
 def diagnose_patient(document_text: str) -> AegisMedAuditResponse:
-    """Wrapper function invoked by api.py to process a patient presentation
-
-    through RAG guideline retrieval and the model failover cascade.
-    """
+    """Wrapper function called by api.py to process a patient presentation."""
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         raise ValueError("GEMINI_API_KEY environment variable is required.")
 
-    # 1. Instantiate Google GenAI Client
     client = genai.Client(api_key=api_key)
 
-    # 2. Retrieve matched clinical guidelines from ChromaDB RAG
+    # 1. Retrieve matched clinical guidelines from ChromaDB
     rag_context = query_medical_kb(document_text)
 
-    # 3. Construct the clinical audit prompt
+    # 2. Construct the clinical audit prompt
     prompt = (
         f"VERIFIED CLINICAL GUIDELINES:\n{rag_context}\n\n"
         f"PATIENT PRESENTATION:\n{document_text}\n\n"
         "Provide a complete clinical audit in structured JSON matching the requested schema."
     )
 
-    # 4. Execute LLM cascade call
+    # 3. Execute LLM call
     response = generate_clinical_audit(
         prompt=prompt,
         client=client,
         response_schema=AegisMedAuditResponse,
     )
 
-    # 5. Parse and return structured response
+    # 4. Parse and return structured response
     return AegisMedAuditResponse.model_validate_json(response.text)
