@@ -1,35 +1,31 @@
-# Use the official Python 3.11 lightweight base image
+# Use official lightweight Python 3.11 image
 FROM python:3.11-slim
 
 # Prevent Python from writing .pyc files & enable unbuffered logging
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    WORKDIR=/code
 
-# Set working directory inside the container
-WORKDIR /code
+WORKDIR ${WORKDIR}
 
-# Copy requirements and install dependencies without caching wheels
-COPY requirements.txt /code/requirements.txt
+# Install dependencies first (leverages Docker layer caching)
+COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r /code/requirements.txt
+    pip install --no-cache-dir -r requirements.txt
 
-# Create a non-root user (Required for Hugging Face Spaces & security best practices)
-RUN useradd -m -u 1000 user
-USER user
-ENV HOME=/home/user \
-    PATH=/home/user/.local/bin:$PATH
+# Copy project files
+COPY . .
 
-# Set working directory to user app home
-WORKDIR $HOME/app
+# Create persistent storage directory for ChromaDB
+RUN mkdir -p ${WORKDIR}/chroma_db
 
-# Copy all project code into the container with correct ownership
-COPY --chown=user . $HOME/app
+# Create and switch to non-root user for security
+RUN useradd -m appuser && \
+    chown -R appuser:appuser ${WORKDIR}
+USER appuser
 
-# Ensure writable directory for ChromaDB storage
-RUN mkdir -p $HOME/app/chroma_db
-
-# Expose default backend port
+# Expose Render default port
 EXPOSE 10000
 
-# Launch Uvicorn server, using dynamic PORT env var if available
+# Launch FastAPI backend via Uvicorn using Render's $PORT
 CMD ["sh", "-c", "uvicorn src.api:app --host 0.0.0.0 --port ${PORT:-10000}"]
