@@ -1,0 +1,17 @@
+[build]
+  publish = "src"
+
+# Security & CORS Headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; connect-src 'self' https://aegismed-ai-engine-2.onrender.com;"
+
+# SPA Redirect Fallback
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

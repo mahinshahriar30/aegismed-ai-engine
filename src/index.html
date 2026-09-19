@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HouseMd AI - Emergency Clinical Decision Support</title>
+    <!-- Tailwind CSS with Dark Mode class strategy -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+</head>
+
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen p-6 font-sans transition-colors duration-200">
+
+    <div class="max-w-5xl mx-auto space-y-6">
+        
+        <!-- Header & Theme Controls -->
+        <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-slate-200 dark:border-slate-800 pb-4 gap-4">
+            <div>
+                <h1 class="text-3xl font-bold flex items-center gap-2 text-slate-900 dark:text-white">
+                    🏥 HouseMd AI Engine
+                </h1>
+                <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">
+                    Proof-of-Concept Emergency Triage & Diagnostic Decision Support Engine
+                </p>
+            </div>
+
+            <!-- Theme Toggle Selector -->
+            <div class="flex items-center gap-2 bg-slate-200 dark:bg-slate-800 p-1 rounded-lg border border-slate-300 dark:border-slate-700 self-start sm:self-auto">
+                <button onclick="setTheme('light')" id="btn-light" class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">
+                    ☀️ Light
+                </button>
+                <button onclick="setTheme('dark')" id="btn-dark" class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">
+                    🌙 Dark
+                </button>
+                <button onclick="setTheme('system')" id="btn-system" class="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">
+                    💻 System
+                </button>
+            </div>
+        </header>
+
+        <!-- Disclaimer Banner -->
+        <div class="bg-red-50 dark:bg-red-950/80 border border-red-300 dark:border-red-700 text-red-900 dark:text-red-200 p-4 rounded-xl space-y-2 text-sm shadow-sm">
+            <p class="font-bold flex items-center gap-1.5 text-red-800 dark:text-red-100">
+                🚨 IMPORTANT NOTICE FOR CLINICIANS & TESTERS:
+            </p>
+            <ul class="list-disc list-inside space-y-1 text-xs text-red-700 dark:text-red-300">
+                <li><strong class="text-red-900 dark:text-white">RESEARCH PROTOTYPE ONLY:</strong> Experimental proof-of-concept for benchmarking.</li>
+                <li><strong class="text-red-900 dark:text-white">NOT A MEDICAL DEVICE:</strong> Does not provide medical advice or substitute professional judgment.</li>
+                <li><strong class="text-red-900 dark:text-white">DO NOT USE FOR ACTIVE PATIENT CARE:</strong> Do not enter real PHI or rely on this system in real emergencies.</li>
+            </ul>
+        </div>
+
+        <!-- Inputs Section -->
+        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-5 space-y-4 shadow-sm">
+            <div>
+                <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">📋 Pre-loaded Sample Cases:</label>
+                <select id="scenarioSelect" onchange="loadScenario()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-sm text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">-- Select a test case --</option>
+                    <option value="stroke">Acute Stroke (CVA)</option>
+                    <option value="benzo">Benzodiazepine Overdose</option>
+                    <option value="ami">Acute Myocardial Infarction</option>
+                    <option value="op">Organophosphate Toxicity</option>
+                    <option value="sepsis">Septic Shock</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Paste Patient Presentation / Clinical Notes:</label>
+                <textarea id="documentText" rows="6" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg p-3 text-sm text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-400" placeholder="Enter patient symptoms, vitals, lab values, or emergency presentation notes here..."></textarea>
+            </div>
+
+            <button onclick="analyzePatient()" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 flex justify-center items-center gap-2 shadow-sm">
+                🚀 Analyze & Generate Clinical Audit
+            </button>
+        </div>
+
+        <!-- Output / Results Section -->
+        <div id="results" class="hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6 space-y-6 shadow-sm">
+            <h2 class="text-xl font-bold border-b border-slate-200 dark:border-slate-700 pb-3 text-slate-900 dark:text-white">
+                📊 Structured Triage & Diagnostic Output
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div id="triageBox" class="p-4 rounded-xl font-bold border flex items-center justify-center text-center"></div>
+                <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col justify-center">
+                    <div class="text-xs font-semibold text-slate-400 tracking-wider">PRIMARY DIAGNOSIS</div>
+                    <div id="diagName" class="text-lg font-bold text-blue-600 dark:text-blue-400 mt-1"></div>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="font-bold text-slate-700 dark:text-slate-300 mb-2">🔍 Patient Presentation Summary</h3>
+                <p id="summaryText" class="text-sm bg-slate-50 dark:bg-slate-900 p-4 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 leading-relaxed"></p>
+            </div>
+
+            <div>
+                <h3 class="font-bold text-slate-700 dark:text-slate-300 mb-2">⚡ Recommended Immediate Emergency Actions</h3>
+                <ul id="actionsList" class="list-disc list-inside text-sm bg-slate-50 dark:bg-slate-900 p-4 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 space-y-1.5"></ul>
+            </div>
+
+            <div>
+                <h3 class="font-bold text-slate-700 dark:text-slate-300 mb-2">📜 RAG Clinical Justification & Guideline</h3>
+                <div class="bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-900 dark:text-blue-200 p-4 rounded-lg text-sm space-y-2">
+                    <p><strong>Clinical Justification:</strong> <span id="justificationText"></span></p>
+                    <p><strong>Reference Guideline:</strong> <code id="guidelineText" class="bg-blue-100 dark:bg-blue-900/80 px-2 py-1 rounded text-blue-950 dark:text-blue-100 font-mono text-xs"></code></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BACKEND_URL = "https://aegismed-ai-engine-2.onrender.com";
+        const API_KEY = "aegismed_secure_key_2026";
+
+        /* --- THEME CONTROLLER --- */
+        let currentThemeMode = localStorage.getItem('theme_preference') || 'system';
+
+        function applyTheme() {
+            const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const isDark = currentThemeMode === 'dark' || (currentThemeMode === 'system' && systemDark);
+
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+
+            // Update button styles
+            ['light', 'dark', 'system'].forEach(mode => {
+                const btn = document.getElementById(`btn-${mode}`);
+                if (mode === currentThemeMode) {
+                    btn.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm border border-slate-300 dark:border-slate-600";
+                } else {
+                    btn.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition";
+                }
+            });
+        }
+
+        function setTheme(mode) {
+            currentThemeMode = mode;
+            localStorage.setItem('theme_preference', mode);
+            applyTheme();
+        }
+
+        // System preference change listener
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            if (currentThemeMode === 'system') applyTheme();
+        });
+
+        // Initialize Theme on Load
+        applyTheme();
+
+        /* --- CLINICAL DATA ENGINE --- */
+        const SAMPLES = {
+            stroke: "PATIENT EMERGENCY ADMISSION: 62-year-old male presenting with sudden right-sided facial drooping, slurred speech, and weakness in the right arm. BP: 195/110 mmHg. Onset: 90 minutes ago.",
+            benzo: "EMERGENCY ADMISSION: 29-year-old female brought in unresponsive next to empty pill bottles of Alprazolam (Xanax). SpO2 86% on room air, RR 8/min (severe respiratory depression), HR 54 bpm, BP 88/50 mmHg.",
+            ami: "PATIENT ADMISSION NOTE: 55-year-old female presenting with severe retrosternal chest pain radiating to left jaw and shoulder, with diaphoretic sweating. BP 140/90 mmHg, HR 105 bpm. Trop-I elevated at 0.85 ng/mL.",
+            op: "EMERGENCY ROOM ASSESSMENT: 28-year-old agricultural worker with accidental pesticide exposure. Pinpoint pupils (miosis), profuse salivation, vomiting, wheezing. HR 48 bpm, BP 85/55 mmHg.",
+            sepsis: "EMERGENCY ADMISSION: 71-year-old female with high fever (39.4°C), confused and lethargic. HR 128, BP 82/48 mmHg. Lactate 4.8 mmol/L, WBC 22,000 /uL."
+        };
+
+        function loadScenario() {
+            const key = document.getElementById("scenarioSelect").value;
+            document.getElementById("documentText").value = SAMPLES[key] || "";
+        }
+
+        async function analyzePatient() {
+            const text = document.getElementById("documentText").value.trim();
+            if (!text) {
+                alert("Please enter patient clinical notes before submitting.");
+                return;
+            }
+
+            const btn = document.getElementById("submitBtn");
+            btn.disabled = true;
+            btn.innerText = "⏳ Querying Vector DB & Running Gemini Engine...";
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/v1/diagnose`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-API-Key": API_KEY
+                    },
+                    body: JSON.stringify({ document_text: text })
+                });
+
+                if (!response.ok) throw new Error(`Backend Error ${response.status}`);
+
+                const data = await response.json();
+                renderResults(data);
+            } catch (err) {
+                alert(`Error connecting to backend: ${err.message}`);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "🚀 Analyze & Generate Clinical Audit";
+            }
+        }
+
+        function renderResults(data) {
+            document.getElementById("results").classList.remove("hidden");
+            
+            const primary = typeof data.primary_diagnosis === 'object' ? data.primary_diagnosis : {};
+            const condition = primary.condition_name || data.primary_diagnosis || "N/A";
+            const level = primary.triage_level || data.triage_level || "UNKNOWN";
+            
+            const triageBox = document.getElementById("triageBox");
+            if (level === "CRITICAL_EMERGENCY") {
+                triageBox.className = "p-4 rounded-xl font-bold border bg-red-100 border-red-300 text-red-800 dark:bg-red-950/80 dark:border-red-700 dark:text-red-200";
+                triageBox.innerText = `🚨 TRIAGE LEVEL: ${level}`;
+            } else if (level === "HIGH_PRIORITY") {
+                triageBox.className = "p-4 rounded-xl font-bold border bg-amber-100 border-amber-300 text-amber-800 dark:bg-amber-950/80 dark:border-amber-700 dark:text-amber-200";
+                triageBox.innerText = `⚠️ TRIAGE LEVEL: ${level}`;
+            } else {
+                triageBox.className = "p-4 rounded-xl font-bold border bg-emerald-100 border-emerald-300 text-emerald-800 dark:bg-emerald-950/80 dark:border-emerald-700 dark:text-emerald-200";
+                triageBox.innerText = `🟢 TRIAGE LEVEL: ${level}`;
+            }
+
+            document.getElementById("diagName").innerText = condition;
+            document.getElementById("summaryText").innerText = data.patient_summary || "N/A";
+            
+            const actionsList = document.getElementById("actionsList");
+            actionsList.innerHTML = (data.immediate_emergency_actions || []).map(a => `<li>${a}</li>`).join("") || "<li>None specified</li>";
+
+            document.getElementById("justificationText").innerText = primary.clinical_justification || data.clinical_justification || "N/A";
+            document.getElementById("guidelineText").innerText = primary.reference_guideline || data.reference_guideline || "N/A";
+        }
+    </script>
+</body>
+</html>
