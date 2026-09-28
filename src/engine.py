@@ -3,25 +3,27 @@ import os
 import time
 from google import genai
 from google.genai import types
+from google.genai.errors import APIError
 from groq import Groq
 
 from src.database import query_medical_kb
 from src.schema import AegisMedAuditResponse
 
-# Active endpoints verified on Google AI Studio & GroqCloud APIs
+# Active endpoints verified on Google & Groq
 CASCADE_MODELS = [
-    # 1. Primary Google Flash Engines
-    "gemini-3.8-flash",
-    "gemini-3.5-flash-lite",
+    # 1. Primary Gemini models (Stable & Active)
+    "gemini-2.5-flash",
+    "gemini-2.5-flash-lite",
+    "gemini-3.5-flash",
 
-    # 2. Groq Production Backups
-    "groq/llama-3.3-70b-versatile",
-    "groq/mixtral-8x7b-32768"
+    # 2. Active Groq Production Backups
+    "groq/llama-3.1-8b-instant",
+    "groq/openai/gpt-oss-20b"
 ]
 
 
 def generate_clinical_audit(prompt: str, response_schema) -> str:
-    """Executes clinical analysis using current Gemini endpoints and fails over to Groq."""
+    """Executes clinical analysis using Gemini endpoints and fails over to Groq."""
     gemini_key = os.getenv("GEMINI_API_KEY")
     groq_key = os.getenv("GROQ_API_KEY")
 
@@ -52,7 +54,7 @@ def generate_clinical_audit(prompt: str, response_schema) -> str:
                     messages=[
                         {
                             "role": "system",
-                            "content": "You are AegisMed AI, an expert clinical triage engine. You output strictly raw JSON matching the provided schema."
+                            "content": "You are AegisMed AI, an expert clinical triage engine. Output strictly raw JSON matching the provided schema."
                         },
                         {
                             "role": "user",
@@ -79,28 +81,35 @@ def generate_clinical_audit(prompt: str, response_schema) -> str:
                 print("[Engine] GEMINI_API_KEY missing. Skipping Gemini.")
                 continue
 
-            try:
-                print(f"[Engine] Attempting generation with Gemini model: {model_name}")
+            # Retries for temporary 503 capacity issues
+            for attempt in range(2):
+                try:
+                    print(f"[Engine] Attempting generation with Gemini model: {model_name} (Attempt {attempt + 1})")
 
-                response = gemini_client.models.generate_content(
-                    model=model_name,
-                    contents=prompt,
-                    config=types.GenerateContentConfig(
-                        response_mime_type="application/json",
-                        response_schema=response_schema,
-                    ),
-                )
-                print(f"[Engine] Successfully generated audit using Gemini: {model_name}")
-                return response.text
+                    response = gemini_client.models.generate_content(
+                        model=model_name,
+                        contents=prompt,
+                        config=types.GenerateContentConfig(
+                            response_mime_type="application/json",
+                            response_schema=response_schema,
+                        ),
+                    )
+                    print(f"[Engine] Successfully generated audit using Gemini: {model_name}")
+                    return response.text
 
-            except Exception as e:
-                err_str = str(e)
-                print(f"[Engine] Gemini model '{model_name}' failed: {err_str}. Falling over...")
-                last_exception = e
+                except APIError as e:
+                    err_str = str(e)
+                    print(f"[Engine] Gemini model '{model_name}' failed: {err_str}.")
+                    last_exception = e
 
-                if "429" in err_str or "503" in err_str or "RESOURCE_EXHAUSTED" in err_str:
-                    time.sleep(1)
-                continue
+                    if "503" in err_str or "UNAVAILABLE" in err_str:
+                        time.sleep(2)  # Short pause before retry or failover
+                        continue
+                    break
+                except Exception as e:
+                    print(f"[Engine] Unexpected failure on '{model_name}': {e}")
+                    last_exception = e
+                    break
 
     raise RuntimeError(
         f"All models in the failover cascade failed. Last error: {last_exception}"
@@ -112,20 +121,20 @@ def diagnose_patient(document_text: str) -> AegisMedAuditResponse:
     # 1. Retrieve clinical guidelines from ChromaDB
     rag_context = query_medical_kb(document_text)
 
-    # 2. Construct the clinical audit prompt
+    # 2. Construct prompt
     prompt = (
         f"VERIFIED CLINICAL GUIDELINES:\n{rag_context}\n\n"
         f"PATIENT PRESENTATION:\n{document_text}\n\n"
         "Provide a complete clinical audit in structured JSON matching the requested schema."
     )
 
-    # 3. Execute LLM call through failover cascade
+    # 3. Call failover cascade
     raw_json_string = generate_clinical_audit(
         prompt=prompt,
         response_schema=AegisMedAuditResponse,
     )
 
-    # 4. Clean markdown wrappers if present
+    # 4. Clean Markdown formatting
     cleaned_string = raw_json_string.strip()
     if cleaned_string.startswith("```"):
         lines = cleaned_string.splitlines()
@@ -135,5 +144,5 @@ def diagnose_patient(document_text: str) -> AegisMedAuditResponse:
             lines = lines[:-1]
         cleaned_string = "\n".join(lines).strip()
 
-    # 5. Parse and return structured Pydantic model
+    # 5. Parse into Pydantic model
     return AegisMedAuditResponse.model_validate_json(cleaned_string)
