@@ -8,25 +8,20 @@ from groq import Groq
 from src.database import query_medical_kb
 from src.schema import AegisMedAuditResponse
 
-# Combined Failover Cascade: Active Gemini endpoints followed by Groq backup
-# src/engine.py
-
-# src/engine.py
-
+# Active endpoints verified on Google AI Studio & GroqCloud APIs
 CASCADE_MODELS = [
-    # 1. Active Google AI Studio Primary & Fallback Endpoints
+    # 1. Primary Google Flash Engines
     "gemini-3.8-flash",
-    "gemini-3.6-flash",
-    "gemini-3.5-flash",
     "gemini-3.5-flash-lite",
 
-    # 2. Active Groq Production Models (Current API String Identifiers)
+    # 2. Groq Production Backups
     "groq/llama-3.3-70b-versatile",
     "groq/mixtral-8x7b-32768"
 ]
 
+
 def generate_clinical_audit(prompt: str, response_schema) -> str:
-    """Executes clinical analysis using Gemini 3.x endpoints and fails over to Groq."""
+    """Executes clinical analysis using current Gemini endpoints and fails over to Groq."""
     gemini_key = os.getenv("GEMINI_API_KEY")
     groq_key = os.getenv("GROQ_API_KEY")
 
@@ -39,18 +34,17 @@ def generate_clinical_audit(prompt: str, response_schema) -> str:
         # --- Handle Groq Fallback ---
         if model_name.startswith("groq/"):
             if not groq_client:
-                print("[Engine] GROQ_API_KEY missing, skipping Groq fallback.")
+                print("[Engine] GROQ_API_KEY missing or not initialized. Skipping Groq.")
                 continue
 
             real_groq_model = model_name.replace("groq/", "")
             try:
                 print(f"[Engine] Attempting generation with Groq model: {real_groq_model}")
-                
-                # Append explicit JSON instruction for Groq structured output
+
                 schema_json = json.dumps(response_schema.model_json_schema())
                 groq_prompt = (
                     f"{prompt}\n\n"
-                    f"CRITICAL REQUIREMENT: Return ONLY raw valid JSON adhering to this JSON Schema:\n{schema_json}"
+                    f"CRITICAL REQUIREMENT: Return ONLY valid raw JSON matching this schema:\n{schema_json}"
                 )
 
                 completion = groq_client.chat.completions.create(
@@ -58,7 +52,7 @@ def generate_clinical_audit(prompt: str, response_schema) -> str:
                     messages=[
                         {
                             "role": "system",
-                            "content": "You are AegisMed AI, an expert emergency clinical triage engine. You output strictly structured JSON."
+                            "content": "You are AegisMed AI, an expert clinical triage engine. You output strictly raw JSON matching the provided schema."
                         },
                         {
                             "role": "user",
@@ -69,20 +63,20 @@ def generate_clinical_audit(prompt: str, response_schema) -> str:
                     temperature=0.1,
                     max_tokens=2048
                 )
-                
+
                 raw_text = completion.choices[0].message.content
-                print(f"[Engine] Successfully generated audit using Groq model: {real_groq_model}")
+                print(f"[Engine] Successfully generated audit using Groq: {real_groq_model}")
                 return raw_text
 
             except Exception as e:
-                print(f"[Engine] Groq Model '{real_groq_model}' failed: {e}. Falling over...")
+                print(f"[Engine] Groq model '{real_groq_model}' failed: {e}. Falling over...")
                 last_exception = e
                 continue
 
         # --- Handle Gemini Models ---
         else:
             if not gemini_client:
-                print("[Engine] GEMINI_API_KEY missing, skipping Gemini models.")
+                print("[Engine] GEMINI_API_KEY missing. Skipping Gemini.")
                 continue
 
             try:
@@ -96,15 +90,14 @@ def generate_clinical_audit(prompt: str, response_schema) -> str:
                         response_schema=response_schema,
                     ),
                 )
-                print(f"[Engine] Successfully generated audit using Gemini model: {model_name}")
+                print(f"[Engine] Successfully generated audit using Gemini: {model_name}")
                 return response.text
 
             except Exception as e:
                 err_str = str(e)
-                print(f"[Engine] Gemini Model '{model_name}' failed: {err_str}. Falling over...")
+                print(f"[Engine] Gemini model '{model_name}' failed: {err_str}. Falling over...")
                 last_exception = e
-                
-                # Brief pause on rate limits before moving to next model
+
                 if "429" in err_str or "503" in err_str or "RESOURCE_EXHAUSTED" in err_str:
                     time.sleep(1)
                 continue
@@ -116,7 +109,7 @@ def generate_clinical_audit(prompt: str, response_schema) -> str:
 
 def diagnose_patient(document_text: str) -> AegisMedAuditResponse:
     """Wrapper function called by api.py to process a patient presentation."""
-    # 1. Retrieve matched clinical guidelines from ChromaDB
+    # 1. Retrieve clinical guidelines from ChromaDB
     rag_context = query_medical_kb(document_text)
 
     # 2. Construct the clinical audit prompt
@@ -132,7 +125,7 @@ def diagnose_patient(document_text: str) -> AegisMedAuditResponse:
         response_schema=AegisMedAuditResponse,
     )
 
-    # 4. Clean potential markdown formatting (e.g., ```json ... ```)
+    # 4. Clean markdown wrappers if present
     cleaned_string = raw_json_string.strip()
     if cleaned_string.startswith("```"):
         lines = cleaned_string.splitlines()
@@ -142,5 +135,5 @@ def diagnose_patient(document_text: str) -> AegisMedAuditResponse:
             lines = lines[:-1]
         cleaned_string = "\n".join(lines).strip()
 
-    # 5. Parse and return structured Pydantic response
+    # 5. Parse and return structured Pydantic model
     return AegisMedAuditResponse.model_validate_json(cleaned_string)
