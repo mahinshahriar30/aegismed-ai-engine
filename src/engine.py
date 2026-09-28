@@ -9,39 +9,73 @@ from groq import Groq
 from src.database import query_medical_kb, collection
 from src.schema import AegisMedAuditResponse
 
-# Cascade list using active API identifiers
+# Priority cascade list using verified active Groq models
 CASCADE_MODELS = [
+    #"groq/openai/gpt-oss-20b",
     "groq/llama-3.3-70b-versatile",
-    "groq/llama-3.1-8b-instant",
-    "gemini-2.5-flash"
+    "groq/llama-3.1-8b-instant"
 ]
 
 
 def search_kb_fallback(query_text: str):
     """
     Direct ChromaDB lookup used as a safety net when all LLMs fail.
-    Extracts condition and triage data directly from local vector metadata.
+    Extracts condition and triage data directly from local vector metadata or document content.
     """
     try:
         results = collection.query(
             query_texts=[query_text],
             n_results=1,
-            include=["metadatas"]
+            include=["metadatas", "documents"]
         )
         if results and results.get("metadatas") and len(results["metadatas"]) > 0 and len(results["metadatas"][0]) > 0:
             metadata = results["metadatas"][0][0]
             
-            actions_raw = metadata.get("recommended_actions", "")
+            # Extract condition name across possible metadata key names
+            condition = (
+                metadata.get("condition_name") or 
+                metadata.get("primary_condition") or 
+                metadata.get("condition") or 
+                metadata.get("name")
+            )
+            
+            # Extract triage level
+            triage = (
+                metadata.get("triage_level") or 
+                metadata.get("triage") or 
+                metadata.get("urgency") or 
+                "Requires Clinical Review"
+            )
+
+            # Extract actions
+            actions_raw = (
+                metadata.get("immediate_emergency_actions") or 
+                metadata.get("recommended_actions") or 
+                metadata.get("actions") or 
+                ""
+            )
+            
             if isinstance(actions_raw, str):
                 actions = [a.strip() for a in actions_raw.split(";") if a.strip()]
-            else:
+            elif isinstance(actions_raw, list):
                 actions = actions_raw
+            else:
+                actions = []
 
-            return {
-                "condition_name": metadata.get("condition_name", "Unverified Match"),
-                "triage_level": metadata.get("triage_level", "Requires Clinical Assessment"),
-                "actions": actions or ["Consult standard healthcare protocols."]
-            }
+            if not actions:
+                actions = ["Perform immediate standard manual triage.", "Consult clinical repository."]
+
+            # If metadata didn't have explicit condition, fallback to snippet snippet excerpt
+            if not condition and results.get("documents") and len(results["documents"][0]) > 0:
+                doc_snippet = results["documents"][0][0][:100]
+                condition = f"Guideline Match ({doc_snippet}...)"
+
+            if condition:
+                return {
+                    "condition_name": condition,
+                    "triage_level": triage,
+                    "actions": actions
+                }
     except Exception as e:
         print(f"[Engine] Fallback ChromaDB search error: {e}")
     
@@ -110,9 +144,8 @@ def generate_clinical_audit(prompt: str, response_schema) -> str | None:
 
 def diagnose_patient(document_text: str) -> AegisMedAuditResponse:
     try:
-        # STEP 1: Mandatory ChromaDB Grounding Search (Anti-Hallucination)
+        # STEP 1: Mandatory ChromaDB Search (Grounding)
         rag_context = query_medical_kb(document_text)
-        has_grounded_context = bool(rag_context and rag_context != "No matching clinical guidelines found.")
 
         prompt = (
             f"VERIFIED CLINICAL GUIDELINES:\n{rag_context}\n\n"
@@ -126,28 +159,28 @@ def diagnose_patient(document_text: str) -> AegisMedAuditResponse:
             response_schema=AegisMedAuditResponse,
         )
 
-        # STEP 3: Emergency Fallback if all LLMs are unavailable/outdated
+        # STEP 3: Handle Fallback if LLMs fail
         if not raw_json_string:
             print("[Engine] All LLMs failed. Performing local ChromaDB fallback search...")
             fallback = search_kb_fallback(document_text)
 
-            if fallback and has_grounded_context:
+            if fallback:
                 return AegisMedAuditResponse(
                     triage_level=fallback["triage_level"],
-                    primary_condition=fallback["condition_name"],
-                    clinical_summary=(
+                    primary_diagnosis=fallback["condition_name"],
+                    patient_summary=(
                         "AI models are temporarily offline. "
-                        f"Retrieved primary condition ('{fallback['condition_name']}') and triage status directly from verified local guidelines."
+                        f"Retrieved primary diagnosis ('{fallback['condition_name']}') and triage status directly from verified ChromaDB guidelines."
                     ),
-                    recommended_actions=fallback["actions"],
+                    immediate_emergency_actions=fallback["actions"],
                     confidence_score=0.5
                 )
             else:
                 return AegisMedAuditResponse(
                     triage_level="Not Sure",
-                    primary_condition="Not Sure / Unverified Condition",
-                    clinical_summary="AI providers are unavailable, and no matching guideline was found in local storage.",
-                    recommended_actions=[
+                    primary_diagnosis="Not Sure / Unverified Condition",
+                    patient_summary="AI providers are offline, and no matching clinical guideline was found in ChromaDB.",
+                    immediate_emergency_actions=[
                         "Immediate manual clinical evaluation required.",
                         "Consult local medical guidelines.",
                         "Retry request when AI services recover."
@@ -155,7 +188,7 @@ def diagnose_patient(document_text: str) -> AegisMedAuditResponse:
                     confidence_score=0.0
                 )
 
-        # STEP 4: Parse & Return LLM Output
+        # STEP 4: Parse Valid LLM Output
         cleaned_string = raw_json_string.strip()
         if cleaned_string.startswith("```"):
             lines = cleaned_string.splitlines()
@@ -171,9 +204,9 @@ def diagnose_patient(document_text: str) -> AegisMedAuditResponse:
         print(f"[Engine] Emergency fallback triggered due to exception: {e}")
         return AegisMedAuditResponse(
             triage_level="Not Sure",
-            primary_condition="Not Sure / System Fallback",
-            clinical_summary="Unable to generate AI synthesis. Please review using clinical guidelines.",
-            recommended_actions=[
+            primary_diagnosis="Not Sure / System Fallback",
+            patient_summary="Unable to generate AI synthesis. Please review using clinical guidelines.",
+            immediate_emergency_actions=[
                 "Manual clinical review required.",
                 "Verify system logs."
             ],
