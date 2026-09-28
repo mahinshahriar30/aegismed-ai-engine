@@ -11,7 +11,7 @@ from src.schema import AegisMedAuditResponse
 
 # Priority cascade list of operational models
 CASCADE_MODELS = [
-    "groq/openai/gpt-oss-20b",
+    #"groq/openai/gpt-oss-20b",
     "gemini-3.5-flash",
     "groq/llama-3.3-70b-versatile"
 ]
