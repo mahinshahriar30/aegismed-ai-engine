@@ -1,7 +1,7 @@
 
 <div align="center">
 
-# 🏥 AegisMed AI Engine (HouseMD)
+# 🏥 HouseMD AI Engine (HouseMD)
 ### *Deterministic Dual-Tier Mass Casualty & Emergency Clinical Triage Framework*
 
 [![Live Demo](https://img.shields.io/badge/🚀_Live_App-Netlify_CDN-00C7B7?style=for-the-badge&logo=netlify&logoColor=white)](https://housemdai.netlify.app)
