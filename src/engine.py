@@ -11,7 +11,7 @@ from src.schema import AegisMedAuditResponse
 
 # Priority cascade list using verified active Groq models
 CASCADE_MODELS = [
-    #"groq/openai/gpt-oss-20b",
+    "groq/openai/gpt-oss-20b",
     "groq/llama-3.3-70b-versatile",
     "groq/llama-3.1-8b-instant"
 ]
