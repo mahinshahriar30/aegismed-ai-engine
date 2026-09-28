@@ -11,18 +11,18 @@ from src.schema import AegisMedAuditResponse
 # Combined Failover Cascade: Active Gemini endpoints followed by Groq backup
 # src/engine.py
 
+# src/engine.py
+
 CASCADE_MODELS = [
-    # 1. Primary stable Gemini Flash (Google AI Studio standard)
-    "gemini-2.5-flash",
-
-    # 2. Gemini 3.x Flash
+    # 1. Active Google AI Studio Primary & Fallback Endpoints
+    "gemini-3.8-flash",
+    "gemini-3.6-flash",
     "gemini-3.5-flash",
+    "gemini-3.5-flash-lite",
 
-    # 3. Groq Fast Instant Fallback (100% accessible across all Groq free keys)
-    "groq/llama-3.1-8b-instant",
-
-    # 4. Groq Heavyweight Fallback
-    "groq/llama3-70b-8192"
+    # 2. Active Groq Production Models (Current API String Identifiers)
+    "groq/llama-3.3-70b-versatile",
+    "groq/mixtral-8x7b-32768"
 ]
 
 def generate_clinical_audit(prompt: str, response_schema) -> str:
