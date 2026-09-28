@@ -11,19 +11,10 @@ GEMINI_CASCADE_MODELS = [
     "gemini-3.6-flash",
     "gemini-3.5-flash-lite",
     "gemini-3.1-pro-preview",
-    # 1. Primary Engine: Ultra-fast, low latency, 1,500 requests/day free
-    "gemini-2.5-flash",
-
-    # 2. High-Frequency Fallback: Higher RPM headroom (15 RPM) on free tier
-    "gemini-2.5-flash-lite",
-
-    # 3. Frontier Capability: Highest intelligence, 1,500 requests/day free
-    "gemini-3.5-flash",
-
-    # 4. Light Triage Fallback: Fast structured extraction & categorization
-    "gemini-3.1-flash-lite",
-
-    # 5. Stable Fallback: High reliability for structured diagnostic outputs
+    "gemini-2.5-flash",        # Primary stable Flash engine
+    "gemini-2.5-flash-lite",   # High-volume fallback
+    "gemini-3.5-flash",        # Frontier agentic Flash engine
+    "gemini-3.1-flash-lite",   # Fast structured parser fallback
     "gemini-1.5-flash"
 ]
 
