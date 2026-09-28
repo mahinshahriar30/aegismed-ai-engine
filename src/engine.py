@@ -9,17 +9,21 @@ from src.database import query_medical_kb
 from src.schema import AegisMedAuditResponse
 
 # Combined Failover Cascade: Active Gemini endpoints followed by Groq backup
-CASCADE_MODELS = [
-    # Gemini endpoints (via google-genai SDK)
-    "gemini-2.5-flash",        # Primary stable Flash engine
-    "gemini-2.5-flash-lite",   # High-volume fallback
-    "gemini-3.5-flash",        # Frontier agentic Flash engine
-    "gemini-3.1-flash-lite",   # Fast structured parser fallback
-    
-    # Groq endpoint (via groq SDK)
-    "groq/llama-3.3-70b-versatile"
-]
+# src/engine.py
 
+CASCADE_MODELS = [
+    # 1. Primary stable Gemini Flash (Google AI Studio standard)
+    "gemini-2.5-flash",
+
+    # 2. Gemini 3.x Flash
+    "gemini-3.5-flash",
+
+    # 3. Groq Fast Instant Fallback (100% accessible across all Groq free keys)
+    "groq/llama-3.1-8b-instant",
+
+    # 4. Groq Heavyweight Fallback
+    "groq/llama3-70b-8192"
+]
 
 def generate_clinical_audit(prompt: str, response_schema) -> str:
     """Executes clinical analysis using Gemini 3.x endpoints and fails over to Groq."""
