@@ -1,6 +1,7 @@
 # src/database.py
 import logging
 import os
+import re
 import sys
 from dataclasses import dataclass, field
 from typing import List
@@ -43,17 +44,35 @@ class Hit:
     metadata: dict = field(default_factory=dict)
     distance: float = 999.0
 
+    def _doc_field(self, label: str) -> str:
+        """
+        Reads a '- Label: value' line from the guideline text. Only trusted when this
+        chunk holds exactly ONE '[DIAGNOSTIC_REF: ...]' entry, so we can never read the
+        urgency of a different guideline by mistake. Otherwise returns "".
+        """
+        doc = self.document or ""
+        if len(re.findall(r"\[DIAGNOSTIC_REF:", doc)) != 1:
+            return ""
+        m = re.search(rf"^\s*-?\s*{label}:\s*(.+?)\s*$", doc, re.MULTILINE | re.IGNORECASE)
+        return m.group(1).rstrip(".").strip() if m else ""
+
     @property
     def condition_name(self) -> str:
-        return _first(self.metadata, ("condition_name", "primary_condition", "condition", "name"))
+        return (
+            _first(self.metadata, ("condition_name", "primary_condition", "condition", "name"))
+            or self._doc_field("Primary Diagnosis")
+        )
 
     @property
     def triage_raw(self) -> str:
-        return _first(self.metadata, ("triage_level", "triage", "urgency"))
+        return _first(self.metadata, ("triage_level", "triage", "urgency")) or self._doc_field("Urgency")
 
     @property
     def title(self) -> str:
         """Human-readable guideline label, used as the reference shown to the user."""
+        m = re.search(r"\[DIAGNOSTIC_REF:\s*([^\]]+?)\s*\]", self.document or "")
+        if m:
+            return m.group(1)
         if self.condition_name:
             return self.condition_name
         first_line = (self.document or "").strip().splitlines()[0:1]
@@ -69,7 +88,12 @@ class Hit:
         )
         if isinstance(raw, list):
             return [str(a).strip() for a in raw if str(a).strip()]
-        return [a.strip() for a in str(raw).split(";") if a.strip()]
+        from_meta = [a.strip() for a in str(raw).split(";") if a.strip()]
+        if from_meta:
+            return from_meta
+        if len(re.findall(r"\[DIAGNOSTIC_REF:", self.document or "")) == 1:
+            return re.findall(r"^\s*\d+\.\s+(.+?)\s*$", self.document or "", re.MULTILINE)
+        return []
 
 
 def retrieve(query_text: str, n_results: int = 3) -> List[Hit]:
