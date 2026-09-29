@@ -1,56 +1,126 @@
 # src/database.py
+import logging
+import os
+import sys
+from dataclasses import dataclass, field
+from typing import List
 
 import chromadb
 from chromadb.utils import embedding_functions
 
-# Initialize ChromaDB client and collection
-chroma_client = chromadb.PersistentClient(path="./chroma_db")
+logger = logging.getLogger("aegismed.database")
+
+CHROMA_PATH = os.getenv("CHROMA_DB_PATH", "./chroma_db")
+
+# A guideline only counts as a "match" if its vector distance is <= this value.
+# Smaller = stricter. Your collection uses Chroma's default metric (squared L2), where
+# 0 is identical and larger is less similar. 0.9 is a STARTING POINT: tune it by running
+#   python -m src.database "your sample case text"
+# on cases that should match and cases that should not.
+MAX_MATCH_DISTANCE = float(os.getenv("MAX_MATCH_DISTANCE", "0.9"))
+
+chroma_client = chromadb.PersistentClient(path=CHROMA_PATH)
 embedding_func = embedding_functions.DefaultEmbeddingFunction()
 
 collection = chroma_client.get_or_create_collection(
     name="medical_knowledge_base",
-    embedding_function=embedding_func
+    embedding_function=embedding_func,
 )
 
-def query_medical_kb(query_text: str, n_results: int = 3) -> str:
-    """Standard RAG retriever that returns concatenated guideline snippets."""
-    results = collection.query(
+
+def _first(metadata: dict, keys) -> str:
+    for k in keys:
+        v = metadata.get(k)
+        if v:
+            return str(v).strip()
+    return ""
+
+
+@dataclass
+class Hit:
+    id: str
+    document: str
+    metadata: dict = field(default_factory=dict)
+    distance: float = 999.0
+
+    @property
+    def condition_name(self) -> str:
+        return _first(self.metadata, ("condition_name", "primary_condition", "condition", "name"))
+
+    @property
+    def triage_raw(self) -> str:
+        return _first(self.metadata, ("triage_level", "triage", "urgency"))
+
+    @property
+    def title(self) -> str:
+        """Human-readable guideline label, used as the reference shown to the user."""
+        if self.condition_name:
+            return self.condition_name
+        first_line = (self.document or "").strip().splitlines()[0:1]
+        return (first_line[0][:80] if first_line else self.id) or self.id
+
+    @property
+    def actions(self) -> List[str]:
+        raw = (
+            self.metadata.get("immediate_emergency_actions")
+            or self.metadata.get("recommended_actions")
+            or self.metadata.get("actions")
+            or ""
+        )
+        if isinstance(raw, list):
+            return [str(a).strip() for a in raw if str(a).strip()]
+        return [a.strip() for a in str(raw).split(";") if a.strip()]
+
+
+def retrieve(query_text: str, n_results: int = 3) -> List[Hit]:
+    """Nearest guideline chunks WITH distances. May raise if the database is broken."""
+    r = collection.query(
         query_texts=[query_text],
-        n_results=n_results
+        n_results=n_results,
+        include=["documents", "metadatas", "distances"],
     )
-    if results and results.get("documents"):
-        return "\n---\n".join(results["documents"][0])
-    return "No matching clinical guidelines found."
+    ids = (r.get("ids") or [[]])[0]
+    docs = (r.get("documents") or [[]])[0]
+    metas = (r.get("metadatas") or [[]])[0]
+    dists = (r.get("distances") or [[]])[0]
+
+    hits = []
+    for i, _id in enumerate(ids):
+        hits.append(
+            Hit(
+                id=str(_id),
+                document=docs[i] if i < len(docs) and docs[i] else "",
+                metadata=(metas[i] if i < len(metas) and metas[i] else {}),
+                distance=float(dists[i]) if i < len(dists) else 999.0,
+            )
+        )
+    return hits
+
+
+# --- Backward-compatible helpers (in case test_db.py or other scripts import them) ---
+def query_medical_kb(query_text: str, n_results: int = 3) -> str:
+    hits = retrieve(query_text, n_results)
+    if not hits:
+        return "No matching clinical guidelines found."
+    return "\n---\n".join(h.document for h in hits)
 
 
 def search_medical_kb_direct(query_text: str, similarity_threshold: float = 0.90):
-    """
-    Queries ChromaDB and returns structured metadata if vector distance 
-    indicates a high-confidence direct match.
-    """
-    results = collection.query(
-        query_texts=[query_text],
-        n_results=1,
-        include=["metadatas", "distances"]
-    )
-    
-    if results and results.get('distances') and len(results['distances'][0]) > 0:
-        distance = results['distances'][0][0]
-        # Cosine/Euclidean distance check (< 0.10 roughly equates to > 90% similarity)
-        if distance < (1.0 - similarity_threshold):
-            metadata = results['metadatas'][0][0]
-            
-            # Format actions list cleanly from metadata string
-            actions_raw = metadata.get("recommended_actions", "")
-            if isinstance(actions_raw, str):
-                actions = [a.strip() for a in actions_raw.split(";") if a.strip()]
-            else:
-                actions = actions_raw
-
-            return {
-                "triage_level": metadata.get("triage_level", "Urgent"),
-                "condition_name": metadata.get("condition_name", "Identified Condition"),
-                "actions": actions
-            }
-            
+    hits = retrieve(query_text, 1)
+    if hits and hits[0].distance <= MAX_MATCH_DISTANCE:
+        h = hits[0]
+        return {
+            "triage_level": h.triage_raw or "UNDETERMINED",
+            "condition_name": h.condition_name or h.title,
+            "actions": h.actions,
+        }
     return None
+
+
+if __name__ == "__main__":
+    # Threshold tuning helper:  python -m src.database "62-year-old male with facial droop..."
+    text = " ".join(sys.argv[1:]) or "sudden facial drooping and slurred speech"
+    print(f"Collection size: {collection.count()} | MAX_MATCH_DISTANCE={MAX_MATCH_DISTANCE}")
+    for h in retrieve(text, 5):
+        verdict = "MATCH" if h.distance <= MAX_MATCH_DISTANCE else "no match"
+        print(f"{h.distance:7.3f}  {verdict:8}  {h.title}  | triage={h.triage_raw or '-'}")
