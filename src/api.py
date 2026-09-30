@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import APIKeyHeader
 from pydantic import BaseModel, ConfigDict, Field
 
-from src.database import collection
+from src.database import collection, ensure_knowledge_base
 from src.engine import build_not_sure_response, diagnose_patient
 from src.schema import AegisMedAuditResponse
 
@@ -52,15 +52,26 @@ async def keep_alive_loop():
             await asyncio.sleep(240)
 
 
+def _load_knowledge_base():
+    try:
+        logger.info("Knowledge base ready: %d guidelines", ensure_knowledge_base())
+    except Exception:
+        logger.exception("Could not load the knowledge base")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Starting AegisMed AI Engine microservice...")
     if not EXPECTED_API_KEY:
         logger.error("AEGIS_API_KEY is not set: all /api/v1/diagnose requests will be rejected.")
+    # Runs in the background so the server opens its port immediately on Render.
+    # Until it finishes, requests are answered "Not Sure".
+    ingest_task = asyncio.create_task(asyncio.to_thread(_load_knowledge_base))
     task = asyncio.create_task(keep_alive_loop()) if RENDER_EXTERNAL_URL else None
     yield
     if task:
         task.cancel()
+    ingest_task.cancel()
     logger.info("Shutting down AegisMed AI Engine microservice...")
 
 

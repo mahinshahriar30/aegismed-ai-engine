@@ -9,7 +9,7 @@ from google import genai
 from google.genai import types
 from groq import Groq
 
-from src.database import MAX_MATCH_DISTANCE, Hit, retrieve
+from src.database import Hit, retrieve
 from src.schema import (
     AegisMedAuditResponse,
     DiagnosisItem,
@@ -245,11 +245,11 @@ def _diagnose(document_text: str) -> AegisMedAuditResponse:
         logger.exception("Knowledge base query failed")
         hits, kb_ok = [], False
 
-    grounded_hits = [h for h in hits if h.distance <= MAX_MATCH_DISTANCE]
+    grounded_hits = [h for h in hits if h.matched]
     if hits:
         logger.info(
-            "Best distance %.3f (threshold %.2f): %d grounded hit(s)",
-            hits[0].distance, MAX_MATCH_DISTANCE, len(grounded_hits),
+            "Top candidate %s (distance %.3f, keywords %.1f/%d): %d matched guideline(s)",
+            hits[0].title, hits[0].distance, hits[0].lex_score, hits[0].lex_terms, len(grounded_hits),
         )
 
     # STEP 2a: matched guidelines exist -> AI answers ONLY from them
