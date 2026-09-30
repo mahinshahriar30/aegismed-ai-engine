@@ -21,7 +21,7 @@ from src.schema import (
 logger = logging.getLogger("aegismed.engine")
 
 CASCADE_MODELS = [
-    "groq/openai/gpt-oss-20b",
+    #"groq/openai/gpt-oss-20b",
     "groq/llama-3.3-70b-versatile",
     "groq/llama-3.1-8b-instant",
 ]
