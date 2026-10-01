@@ -319,12 +319,10 @@ aegismed-ai-engine/
 │   ├── engine.py              # Grounded prompting, LLM failover cascade, database fallback, "Not Sure"
 │   ├── index.html             # Single-page frontend (Netlify)
 │   └── schema.py              # Pydantic models and triage enum
-├── vector_store/              # Legacy store from an earlier version (not used by the app)
 ├── Dockerfile                 # Non-root Docker build for Render
 ├── netlify.toml               # Netlify deployment config
 ├── requirements.txt           # Python dependencies
-├── test_db.py                 # Vector DB retrieval test script
-└── test_engine.py             # Diagnostic pipeline test script
+└── test_engine.py             # End-to-end test of the sample cases (run: python test_engine.py)
 ```
 
 ---
@@ -337,7 +335,7 @@ Use the retrieval inspector to check how any note is matched:
 python -m src.database "your clinical note here"
 ```
 
-It prints the five best candidates with their vector distance, keyword score/terms and whether each counts as a `MATCH`. To test the no-AI path locally, run the engine without `GROQ_API_KEY` set; matched cases return `database_fallback` and unmatched cases return `no_match`.
+It prints the five best candidates with their vector distance, keyword score/terms and whether each counts as a `MATCH`. Run `python test_engine.py` to check the sample cases end to end. Without `GROQ_API_KEY` set it exercises the no-AI path (matched cases return `database_fallback`); with the key set it exercises the AI path (`ai_grounded`). The unrelated case should always return `no_match`.
 
 The default thresholds were calibrated on the five sample cases in the web app plus a few non-matching notes. If you add guidelines or notice missed matches, inspect a few real notes with the command above and adjust `MAX_MATCH_DISTANCE`, `LEX_MIN_TERMS` and `LEX_MIN_SCORE`.
 

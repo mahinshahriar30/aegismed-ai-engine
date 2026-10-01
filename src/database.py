@@ -288,26 +288,6 @@ def ensure_knowledge_base() -> int:
     return collection.count()
 
 
-# --- Backward-compatible helpers (in case test_db.py or other scripts import them) ---
-def query_medical_kb(query_text: str, n_results: int = 3) -> str:
-    hits = retrieve(query_text, n_results)
-    if not hits:
-        return "No matching clinical guidelines found."
-    return "\n---\n".join(h.document for h in hits)
-
-
-def search_medical_kb_direct(query_text: str, similarity_threshold: float = 0.90):
-    hits = retrieve(query_text, 1)
-    if hits and hits[0].matched:
-        h = hits[0]
-        return {
-            "triage_level": h.triage_raw or "UNDETERMINED",
-            "condition_name": h.condition_name or h.title,
-            "actions": h.actions,
-        }
-    return None
-
-
 if __name__ == "__main__":
     if sys.argv[1:2] == ["--ingest"]:
         # Local use:  python -m src.database --ingest

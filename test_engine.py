@@ -1,63 +1,74 @@
-import os
+"""
+End-to-end test of the diagnose pipeline. Run from the project root:
+
+    python test_engine.py
+
+Without GROQ_API_KEY set, matched cases are answered from the database (database_fallback).
+With it set, they are answered by the AI (ai_grounded). The unrelated case must always be no_match.
+"""
+import sys
+
+from src.database import ensure_knowledge_base
 from src.engine import diagnose_patient
 
-def run_medical_test():
-    print("🚀 Initializing HouseMd AI Engine Medical Test...")
+# (name, presentation, expected top guideline or None when "Not Sure" is expected)
+CASES = [
+    (
+        "Stroke",
+        "PATIENT EMERGENCY ADMISSION: 62-year-old male presenting with sudden right-sided facial drooping, "
+        "slurred speech, and weakness in the right arm. BP: 195/110 mmHg. Onset: 90 minutes ago.",
+        "ACUTE_CEREBROVASCULAR_ACCIDENT_STROKE",
+    ),
+    (
+        "Benzodiazepine overdose",
+        "EMERGENCY ADMISSION: 29-year-old female brought in unresponsive next to empty pill bottles of "
+        "Alprazolam (Xanax). SpO2 86% on room air, RR 8/min (severe respiratory depression), HR 54 bpm, "
+        "BP 88/50 mmHg.",
+        "BENZODIAZEPINE_OVERDOSE_AND_TOXICITY",
+    ),
+    (
+        "Acute myocardial infarction",
+        "PATIENT ADMISSION NOTE: 55-year-old female presenting with severe retrosternal chest pain radiating "
+        "to left jaw and shoulder, with diaphoretic sweating. BP 140/90 mmHg, HR 105 bpm. "
+        "Trop-I elevated at 0.85 ng/mL.",
+        "ACUTE_CORONARY_SYNDROME_AND_MI",
+    ),
+    (
+        "Organophosphate toxicity",
+        "EMERGENCY ROOM ASSESSMENT: 28-year-old agricultural worker with accidental pesticide exposure. "
+        "Pinpoint pupils (miosis), profuse salivation, vomiting, wheezing. HR 48 bpm, BP 85/55 mmHg.",
+        "ORGANOPHOSPHATE_POISONING_TOXICOLOGY",
+    ),
+    (
+        "Septic shock",
+        "EMERGENCY ADMISSION: 71-year-old female with high fever (39.4 C), confused and lethargic. "
+        "HR 128, BP 82/48. Lactate 4.8 mmol/L, WBC 22,000 /uL.",
+        "SEPSIS_AND_SEPTIC_SHOCK",
+    ),
+    (
+        "Unrelated case (expect Not Sure)",
+        "fractured ankle after a fall, swollen, no other symptoms",
+        None,
+    ),
+]
 
-    sample_medical = """
-    PATIENT LAB REPORT:
-    Fasting Blood Glucose: 142 mg/dL
-    HbA1c: 6.8%
-    Total Cholesterol: 245 mg/dL
-    ALT (Alanine Aminotransferase): 65 U/L
-    AST (Aspartate Aminotransferase): 58 U/L
-    Notes: Patient reports fatigue and mild right upper quadrant abdominal discomfort.
-    """
 
-    print("\n--------------------------------------------------")
-    print("🧪 Executing Diagnostic Test: Medical Lab Report")
-    print("--------------------------------------------------")
+def main() -> int:
+    print(f"Knowledge base: {ensure_knowledge_base()} guidelines\n")
+    failures = 0
+    for name, text, expected in CASES:
+        report = diagnose_patient(document_text=text)
+        diag = report.primary_diagnosis
+        if expected:
+            ok = report.reference_guidelines[:1] == [expected]
+        else:
+            ok = report.source == "no_match" and diag.triage_level.value == "UNDETERMINED"
+        failures += 0 if ok else 1
+        print(f"[{'PASS' if ok else 'FAIL'}] {name}")
+        print(f"       source={report.source} | {diag.condition_name} | {diag.triage_level.value}")
+    print(f"\n{len(CASES) - failures}/{len(CASES)} passed")
+    return 1 if failures else 0
 
-    try:
-        # Executes RAG pipeline and returns AegisMedAuditResponse
-        report = diagnose_patient(document_text=sample_medical)
-
-        # Access fields nested inside primary_diagnosis
-        diag = getattr(report, 'primary_diagnosis', None)
-        
-        if diag:
-            condition = getattr(diag, 'condition_name', 'N/A')
-            triage = getattr(diag, 'triage_level', 'N/A')
-            triage_val = getattr(triage, 'value', triage)
-            justification = getattr(diag, 'clinical_justification', '')
-            ref = getattr(diag, 'reference_guideline', 'N/A')
-
-            print(f"📄 Primary Diagnosis : {condition}")
-            print(f"🚨 Triage Severity  : {triage_val}")
-            print(f"📚 Ref Guideline    : {ref}")
-            print(f"\n📝 Clinical Justification:\n{justification}\n")
-
-        # Handle detected risks if present
-        risks = getattr(report, 'detected_risks', None) or getattr(report, 'anomalies', None)
-        if risks:
-            print("⚠️ Detected Health Risks & Anomalies:")
-            for risk in risks:
-                severity = getattr(risk, 'severity', 'HIGH')
-                issue = getattr(risk, 'issue', getattr(risk, 'risk_name', 'Anomaly'))
-                explanation = getattr(risk, 'explanation', '')
-                print(f"  - [{severity}] {issue}: {explanation}")
-
-        # Handle recommendations if present
-        recs = getattr(report, 'actionable_recommendations', None) or getattr(report, 'recommendations', None)
-        if recs:
-            print("\n💡 Actionable Recommendations:")
-            for rec in recs:
-                print(f"  • {rec}")
-
-        print("\n✅ Medical Test Executed Successfully!")
-
-    except Exception as e:
-        print(f"❌ Test Failed with error: {str(e)}")
 
 if __name__ == "__main__":
-    run_medical_test()
+    sys.exit(main())
