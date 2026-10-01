@@ -25,7 +25,7 @@ In emergency triage, an AI model that invents a diagnosis is worse than one that
 1. **Search:** The presentation is matched against 36 emergency guidelines stored in ChromaDB, using a vector search plus a keyword check.
 2. **Grounded AI:** If a guideline matches, only the matched guideline text is given to the LLM, which writes the summary, justification and action steps. The condition name and triage level in the response are taken from the database entry, and the reference guideline is attached by code, not by the model.
 3. **Database fallback:** If every AI model fails, the API still answers with the matched guideline's condition name, triage level and treatment steps.
-4. **Not Sure:** If nothing matches, the API answers **"Not Sure" / `UNDETERMINED`** and asks for manual triage. By default the model is **not** asked to diagnose freely.
+4. **Not Sure:** If nothing matches, the API answers **"Not Sure" / `UNDETERMINED`** and asks for manual triage. The model is never asked to diagnose freely.
 
 The API is designed to always return a valid answer: provider outages, malformed model output and database errors all end in one of the modes above, not a server error.
 
@@ -86,7 +86,6 @@ Matched guidelines are ranked first, then ordered by combining the distance rank
 | `ai_grounded` | A guideline matched and the LLM produced the explanation. Condition and triage come from the database. |
 | `database_fallback` | A guideline matched but every AI model failed. Result read directly from the database. |
 | `no_match` | No guideline matched (or the knowledge base was unavailable). Condition is "Not Sure", triage is `UNDETERMINED`. |
-| `ai_ungrounded` | Only if `ALLOW_UNGROUNDED_AI=true`: no guideline matched, and a general AI assessment is returned, clearly flagged as ungrounded. Off by default. |
 
 ---
 
@@ -146,7 +145,7 @@ The app also does this automatically at startup, so this step is mainly for loca
 ### 4. Run the API
 
 ```bash
-uvicorn src.api:app --host 0.0.0.0 --port 10000
+uvicorn src.api:app --host 0.0.0.0 --port 10000 --env-file .env
 ```
 
 Interactive API docs (Swagger UI): `http://localhost:10000/docs`
@@ -173,7 +172,6 @@ docker run -p 10000:10000 --env-file .env aegismed-ai-engine
 | `MAX_MATCH_DISTANCE` | No | `0.9` | Vector-distance cutoff for a match (smaller is stricter). |
 | `LEX_MIN_TERMS` | No | `3` | Minimum distinctive keywords needed for a keyword match. |
 | `LEX_MIN_SCORE` | No | `7.0` | Minimum weighted keyword score for a keyword match. |
-| `ALLOW_UNGROUNDED_AI` | No | `false` | If `true`, unmatched cases get a general AI assessment flagged as ungrounded, instead of "Not Sure". |
 | `LLM_TIMEOUT_SECONDS` | No | `25` | Per-model timeout. |
 | `CHROMA_DB_PATH` | No | `./chroma_db` | Where the vector database is stored. |
 | `MEDICAL_DATA_FILE` | No | `data/medical_reference.txt` | Guideline source file. |

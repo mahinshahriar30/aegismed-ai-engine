@@ -82,7 +82,7 @@ class LLMAuditOutput(BaseModel):
 class AegisMedAuditResponse(LLMAuditOutput):
     """Final API response. The extra fields are always set by our code, never by the LLM."""
 
-    source: Literal["ai_grounded", "ai_ungrounded", "database_fallback", "no_match"] = "ai_grounded"
+    source: Literal["ai_grounded", "database_fallback", "no_match"] = "ai_grounded"
     grounded: bool = True
     reference_guidelines: List[str] = Field(default_factory=list)
     notice: Optional[str] = None
