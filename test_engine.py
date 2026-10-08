@@ -4,14 +4,15 @@ End-to-end test of the diagnose pipeline. Run from the project root:
     python test_engine.py
 
 Without GROQ_API_KEY set, matched cases are answered from the database (database_fallback).
-With it set, they are answered by the AI (ai_grounded). The unrelated case must always be no_match.
+With it set, they are answered by the AI (ai_grounded). The unrelated case must never be grounded:
+it is no_match without an AI key, or ai_ungrounded (flagged) with one.
 """
 import sys
 
 from src.database import ensure_knowledge_base
 from src.engine import diagnose_patient
 
-# (name, presentation, expected top guideline or None when "Not Sure" is expected)
+# (name, presentation, expected top guideline or None when no guideline should match)
 CASES = [
     (
         "Stroke",
@@ -46,7 +47,7 @@ CASES = [
         "SEPSIS_AND_SEPTIC_SHOCK",
     ),
     (
-        "Unrelated case (expect Not Sure)",
+        "Unrelated case (expect no guideline match)",
         "fractured ankle after a fall, swollen, no other symptoms",
         None,
     ),
@@ -62,7 +63,7 @@ def main() -> int:
         if expected:
             ok = report.reference_guidelines[:1] == [expected]
         else:
-            ok = report.source == "no_match" and diag.triage_level.value == "UNDETERMINED"
+            ok = report.source in ("no_match", "ai_ungrounded") and not report.grounded
         failures += 0 if ok else 1
         print(f"[{'PASS' if ok else 'FAIL'}] {name}")
         print(f"       source={report.source} | {diag.condition_name} | {diag.triage_level.value}")

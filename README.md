@@ -25,7 +25,7 @@ In emergency triage, an AI model that invents a diagnosis is worse than one that
 1. **Search:** The presentation is matched against 36 emergency guidelines stored in ChromaDB, using a vector search plus a keyword check.
 2. **Grounded AI:** If a guideline matches, only the matched guideline text is given to the LLM, which writes the summary, justification and action steps. The condition name and triage level in the response are taken from the database entry, and the reference guideline is attached by code, not by the model.
 3. **Database fallback:** If every AI model fails, the API still answers with the matched guideline's condition name, triage level and treatment steps.
-4. **Not Sure:** If nothing matches, the API answers **"Not Sure" / `UNDETERMINED`** and asks for manual triage. The model is never asked to diagnose freely.
+4. **No matching guideline:** The AI is still asked for a general assessment, but the answer is clearly labelled **NOT grounded in verified guidelines**. If no AI model is available either, the API answers **"Not Sure" / `UNDETERMINED`** and asks for manual triage. Set `ALLOW_UNGROUNDED_AI=false` for strict mode (always "Not Sure" when nothing matches).
 
 The API is designed to always return a valid answer: provider outages, malformed model output and database errors all end in one of the modes above, not a server error.
 
@@ -85,7 +85,8 @@ Matched guidelines are ranked first, then ordered by combining the distance rank
 |---|---|
 | `ai_grounded` | A guideline matched and the LLM produced the explanation. Condition and triage come from the database. |
 | `database_fallback` | A guideline matched but every AI model failed. Result read directly from the database. |
-| `no_match` | No guideline matched (or the knowledge base was unavailable). Condition is "Not Sure", triage is `UNDETERMINED`. |
+| `ai_ungrounded` | No guideline matched, so the AI gave a general assessment. It is **not** backed by a verified guideline, carries a warning in `notice` and at the start of `patient_summary`, and its `reference_guideline` is "None (ungrounded)". |
+| `no_match` | No guideline matched and no AI answer was available (or `ALLOW_UNGROUNDED_AI=false`, or the knowledge base was unavailable). Condition is "Not Sure", triage is `UNDETERMINED`. |
 
 ---
 
@@ -169,6 +170,7 @@ docker run -p 10000:10000 --env-file .env aegismed-ai-engine
 | `GROQ_API_KEY` | Yes, for AI answers | none | Enables the Groq models. Without it, the API still works in `database_fallback` / `no_match` mode. |
 | `GEMINI_API_KEY` | No | none | Only used if Gemini model names are added to `CASCADE_MODELS` in `src/engine.py`. |
 | `ALLOWED_ORIGINS` | No | `https://housemdai.netlify.app` | Comma-separated list of frontend origins allowed by CORS. |
+| `ALLOW_UNGROUNDED_AI` | No | `true` | If `false`, cases that match no guideline are never sent to the AI and answer "Not Sure" (strict mode). |
 | `MAX_MATCH_DISTANCE` | No | `0.9` | Vector-distance cutoff for a match (smaller is stricter). |
 | `LEX_MIN_TERMS` | No | `3` | Minimum distinctive keywords needed for a keyword match. |
 | `LEX_MIN_SCORE` | No | `7.0` | Minimum weighted keyword score for a keyword match. |
@@ -335,7 +337,7 @@ Use the retrieval inspector to check how any note is matched:
 python -m src.database "your clinical note here"
 ```
 
-It prints the five best candidates with their vector distance, keyword score/terms and whether each counts as a `MATCH`. Run `python test_engine.py` to check the sample cases end to end. Without `GROQ_API_KEY` set it exercises the no-AI path (matched cases return `database_fallback`); with the key set it exercises the AI path (`ai_grounded`). The unrelated case should always return `no_match`.
+It prints the five best candidates with their vector distance, keyword score/terms and whether each counts as a `MATCH`. Run `python test_engine.py` to check the sample cases end to end. Without `GROQ_API_KEY` set it exercises the no-AI path (matched cases return `database_fallback`); with the key set it exercises the AI path (`ai_grounded`). The unrelated case must never be grounded: it returns `no_match` without an AI key, or `ai_ungrounded` (flagged) with one.
 
 The default thresholds were calibrated on the five sample cases in the web app plus a few non-matching notes. If you add guidelines or notice missed matches, inspect a few real notes with the command above and adjust `MAX_MATCH_DISTANCE`, `LEX_MIN_TERMS` and `LEX_MIN_SCORE`.
 
