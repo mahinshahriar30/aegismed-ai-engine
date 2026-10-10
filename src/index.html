@@ -17,9 +17,9 @@
     </script>
 </head>
 
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen p-6 font-sans transition-colors duration-200">
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen p-6 font-sans transition-colors duration-200 flex flex-col justify-between">
 
-    <div class="max-w-5xl mx-auto space-y-6">
+    <div class="max-w-5xl mx-auto space-y-6 w-full mb-12">
         
         <!-- Header & Theme Controls -->
         <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-slate-200 dark:border-slate-800 pb-4 gap-4">
@@ -115,6 +115,34 @@
             </div>
         </div>
     </div>
+
+    <!-- Professional Enterprise Footer -->
+    <footer class="w-full max-w-5xl mx-auto border-t border-slate-200 dark:border-slate-800 pt-8 pb-6 mt-12 text-xs text-slate-500 dark:text-slate-400">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+            
+            <!-- Column 1: Identification & Copyright -->
+            <div class="space-y-1 text-center md:text-left">
+                <p class="font-semibold text-slate-700 dark:text-slate-300">HouseMd AI Clinical Engine</p>
+                <p>Copyright &copy; 2026 <strong>Mahin Shahriar</strong>. All rights reserved.</p>
+            </div>
+
+            <!-- Column 2: System Status Indicator -->
+            <div class="flex items-center justify-center gap-2">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 font-medium">
+                    <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                    AI Engine Active
+                </span>
+            </div>
+
+            <!-- Column 3: Tech Stack Badges -->
+            <div class="flex flex-wrap items-center justify-center md:justify-end gap-1.5 font-mono">
+                <span class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700">FastAPI</span>
+                <span class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700">ChromaDB</span>
+                <span class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700">Groq/Gemini</span>
+            </div>
+
+        </div>
+    </footer>
 
     <script>
         const BACKEND_URL = "https://aegismed-ai-engine-3.onrender.com";
