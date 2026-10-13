@@ -79,10 +79,22 @@ class LLMAuditOutput(BaseModel):
     )
 
 
+class AIGuess(BaseModel):
+    """A rough AI guess for notes that match nothing on the verified list. It is NOT verified."""
+
+    possible_condition: str
+    estimated_urgency: TriageLevel
+    reasoning: str
+    suggested_steps: List[str] = Field(default_factory=list)
+    summary: str = ""
+    suspects_urgent: bool = False  # True if the guess (or any alternative) is critical or high priority
+
+
 class AegisMedAuditResponse(LLMAuditOutput):
     """Final API response. The extra fields are always set by our code, never by the LLM."""
 
-    source: Literal["ai_grounded", "ai_ungrounded", "database_fallback", "no_match"] = "ai_grounded"
+    source: Literal["ai_grounded", "database_fallback", "no_match", "unavailable"] = "ai_grounded"
     grounded: bool = True
     reference_guidelines: List[str] = Field(default_factory=list)
     notice: Optional[str] = None
+    ai_guess: Optional[AIGuess] = Noned

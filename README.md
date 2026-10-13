@@ -25,7 +25,7 @@ In emergency triage, an AI model that invents a diagnosis is worse than one that
 1. **Search:** The presentation is matched against 36 emergency guidelines stored in ChromaDB, using a vector search plus a keyword check.
 2. **Grounded AI:** If a guideline matches, only the matched guideline text is given to the LLM, which writes the summary, justification and action steps. The condition name and triage level in the response are taken from the database entry, and the reference guideline is attached by code, not by the model.
 3. **Database fallback:** If every AI model fails, the API still answers with the matched guideline's condition name, triage level and treatment steps.
-4. **No matching guideline:** The AI is still asked for a general assessment, but the answer is clearly labelled **NOT grounded in verified guidelines**. If no AI model is available either, the API answers **"Not Sure" / `UNDETERMINED`** and asks for manual triage. Set `ALLOW_UNGROUNDED_AI=false` for strict mode (always "Not Sure" when nothing matches).
+4. **No listed emergency detected:** If nothing on the verified list matches, the headline is **"No listed emergency detected"** with a safety line that this does not rule out an emergency. The AI is then asked for a rough guess, shown in a **separate box clearly labelled as not verified**, with a loud warning if the guess suggests urgency. If no AI model is available, only the headline and safety line are shown. Set `ALLOW_UNGROUNDED_AI=false` to turn the guess off.
 
 The API is designed to always return a valid answer: provider outages, malformed model output and database errors all end in one of the modes above, not a server error.
 
@@ -35,7 +35,7 @@ The API is designed to always return a valid answer: provider outages, malformed
 
 - 🎯 **Guideline-grounded answers:** Headline diagnosis and triage level come from the curated database; the LLM only explains and elaborates.
 - 🔎 **Hybrid retrieval:** Vector search (ChromaDB) combined with a keyword check over each guideline's diagnostic criteria, because short symptom notes match long protocol text poorly with embeddings alone.
-- 🛟 **Graceful degradation:** AI models down → database result. No match → "Not Sure". Never a crash.
+- 🛟 **Graceful degradation:** AI models down → database result. No match → "No listed emergency detected" (never an all-clear). Never a crash.
 - 🧾 **Traceable references:** The guideline titles shown to the user are added by code from what was actually retrieved.
 - 🛡️ **Multi-model failover:** Tries `openai/gpt-oss-20b`, `llama-3.3-70b-versatile` and `llama-3.1-8b-instant` on Groq in order; a model only counts as successful if its output parses and validates. Gemini models can be added to the cascade.
 - 📋 **Strict typing:** Pydantic schema (`AegisMedAuditResponse`) with a `CRITICAL_EMERGENCY` / `HIGH_PRIORITY` / `STABLE` / `UNDETERMINED` triage enum.
@@ -56,8 +56,8 @@ The API is designed to always return a valid answer: provider outages, malformed
                  Matching guideline(s) found                                 No guideline matches
                           │                                                           │
                           ▼                                                           ▼
-            Matched guideline text ──► LLM cascade                        "Not Sure" / UNDETERMINED
-                          │                                               (manual triage required)
+            Matched guideline text ──► LLM cascade                        "No listed emergency detected"
+                          │                                               + separate, flagged AI guess
               ┌───────────┴───────────┐
               ▼                       ▼
         AI succeeds             All AI models fail
@@ -85,8 +85,8 @@ Matched guidelines are ranked first, then ordered by combining the distance rank
 |---|---|
 | `ai_grounded` | A guideline matched and the LLM produced the explanation. Condition and triage come from the database. |
 | `database_fallback` | A guideline matched but every AI model failed. Result read directly from the database. |
-| `ai_ungrounded` | No guideline matched, so the AI gave a general assessment. It is **not** backed by a verified guideline, carries a warning in `notice` and at the start of `patient_summary`, and its `reference_guideline` is "None (ungrounded)". |
-| `no_match` | No guideline matched and no AI answer was available (or `ALLOW_UNGROUNDED_AI=false`, or the knowledge base was unavailable). Condition is "Not Sure", triage is `UNDETERMINED`. |
+| `no_match` | No condition on the verified list matched. The headline is "No listed emergency detected" (triage `UNDETERMINED`) and `notice` carries the safety line. `ai_guess` holds the separate, unverified AI guess, or is empty when the AI is unavailable or switched off. |
+| `unavailable` | The verified list could not be checked (database error or still loading), so the answer is "Not Sure" / `UNDETERMINED`. This is never shown as "no emergency". |
 
 ---
 
@@ -170,7 +170,7 @@ docker run -p 10000:10000 --env-file .env aegismed-ai-engine
 | `GROQ_API_KEY` | Yes, for AI answers | none | Enables the Groq models. Without it, the API still works in `database_fallback` / `no_match` mode. |
 | `GEMINI_API_KEY` | No | none | Only used if Gemini model names are added to `CASCADE_MODELS` in `src/engine.py`. |
 | `ALLOWED_ORIGINS` | No | `https://housemdai.netlify.app` | Comma-separated list of frontend origins allowed by CORS. |
-| `ALLOW_UNGROUNDED_AI` | No | `true` | If `false`, cases that match no guideline are never sent to the AI and answer "Not Sure" (strict mode). |
+| `ALLOW_UNGROUNDED_AI` | No | `true` | If `false`, the separate AI guess for unmatched notes is never requested. |
 | `MAX_MATCH_DISTANCE` | No | `0.9` | Vector-distance cutoff for a match (smaller is stricter). |
 | `LEX_MIN_TERMS` | No | `3` | Minimum distinctive keywords needed for a keyword match. |
 | `LEX_MIN_SCORE` | No | `7.0` | Minimum weighted keyword score for a keyword match. |
@@ -269,15 +269,15 @@ The endpoint returns HTTP 200 with a valid audit in all three modes below.
 }
 ```
 
-**Mode 3: `no_match`**
+**Mode 3: `no_match`** (no listed emergency; `ai_guess` is the separate, unverified guess)
 
 ```json
 {
-  "patient_summary": "No matching guideline was found for this presentation.",
+  "patient_summary": "No emergency condition from the verified list was detected for this presentation. This does not rule out an emergency: if symptoms are severe, sudden or worsening, seek urgent care.",
   "primary_diagnosis": {
-    "condition_name": "Not Sure",
+    "condition_name": "No listed emergency detected",
     "triage_level": "UNDETERMINED",
-    "clinical_justification": "No verified guideline could be matched and no AI diagnosis was generated.",
+    "clinical_justification": "The note did not match any condition on the verified emergency list. This is not a clinical all-clear.",
     "reference_guideline": "None"
   },
   "differential_diagnoses": [],
@@ -288,7 +288,15 @@ The endpoint returns HTTP 200 with a valid audit in all three modes below.
   "source": "no_match",
   "grounded": false,
   "reference_guidelines": [],
-  "notice": "No matching guideline was found in the local knowledge base, and no AI diagnosis was generated. Manual clinical triage is required."
+  "notice": "No emergency condition from the verified list was detected. This does not rule out an emergency. If symptoms are severe, sudden or worsening, seek urgent care.",
+  "ai_guess": {
+    "possible_condition": "Possible mild upper respiratory infection",
+    "estimated_urgency": "STABLE",
+    "reasoning": "Rough guess from general knowledge. Not verified.",
+    "suggested_steps": ["Rest and fluids.", "Seek urgent care if breathing becomes difficult, symptoms worsen, or a high fever develops."],
+    "summary": "",
+    "suspects_urgent": false
+  }
 }
 ```
 
@@ -318,7 +326,7 @@ aegismed-ai-engine/
 ├── src/
 │   ├── api.py                 # FastAPI service: auth, CORS, startup loading, keep-alive loop
 │   ├── database.py            # ChromaDB access, guideline loader, hybrid (vector + keyword) retrieval
-│   ├── engine.py              # Grounded prompting, LLM failover cascade, database fallback, "Not Sure"
+│   ├── engine.py              # Grounded prompting, LLM failover cascade, database fallback, no-match handling, AI guess
 │   ├── index.html             # Single-page frontend (Netlify)
 │   └── schema.py              # Pydantic models and triage enum
 ├── Dockerfile                 # Non-root Docker build for Render
@@ -337,7 +345,7 @@ Use the retrieval inspector to check how any note is matched:
 python -m src.database "your clinical note here"
 ```
 
-It prints the five best candidates with their vector distance, keyword score/terms and whether each counts as a `MATCH`. Run `python test_engine.py` to check the sample cases end to end. Without `GROQ_API_KEY` set it exercises the no-AI path (matched cases return `database_fallback`); with the key set it exercises the AI path (`ai_grounded`). The unrelated case must never be grounded: it returns `no_match` without an AI key, or `ai_ungrounded` (flagged) with one.
+It prints the five best candidates with their vector distance, keyword score/terms and whether each counts as a `MATCH`. Run `python test_engine.py` to check the sample cases end to end. Without `GROQ_API_KEY` set it exercises the no-AI path (matched cases return `database_fallback`); with the key set it exercises the AI path (`ai_grounded`). The unrelated case must always return `no_match` ("No listed emergency detected"); with an AI key it also carries a separate, flagged `ai_guess`.
 
 The default thresholds were calibrated on the five sample cases in the web app plus a few non-matching notes. If you add guidelines or notice missed matches, inspect a few real notes with the command above and adjust `MAX_MATCH_DISTANCE`, `LEX_MIN_TERMS` and `LEX_MIN_SCORE`.
 
@@ -346,10 +354,10 @@ The default thresholds were calibrated on the five sample cases in the web app p
 ## 🚧 Limitations
 
 - **Prototype only.** Retrieval thresholds were tuned on a small set of examples; they have not been validated on real clinical notes.
-- **Keyword matching is lexical.** It matches words, not meaning, so unusual phrasing can miss a guideline (the safe result is "Not Sure") and a note that repeats a guideline's own words can match it without being that condition.
+- **Keyword matching is lexical.** It matches words, not meaning, so unusual phrasing can miss a guideline (the result is "No listed emergency detected", never an all-clear) and a note that repeats a guideline's own words can match it without being that condition.
 - **The embedding model is general-purpose** (MiniLM via ChromaDB's default), not clinical, which is why the keyword check exists.
 - **The database fallback shows the single closest guideline** and is clearly flagged; a clinician must verify it.
-- **Only the knowledge base is covered:** conditions outside the 36 guidelines return "Not Sure".
+- **Only the knowledge base is covered:** conditions outside the 36 guidelines are not detected: the headline is "No listed emergency detected", which does not rule out an emergency, and any AI guess is unverified.
 - **Free-tier hosting** can have cold starts, and Render's disk is ephemeral, which is why the database is rebuilt at startup.
 
 ---

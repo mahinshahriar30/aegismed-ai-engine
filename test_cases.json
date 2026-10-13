@@ -1,0 +1,122 @@
+[
+  {
+    "id": "STROKE_01",
+    "presentation": "PATIENT PRESENTATION: 67-year-old male presenting with acute onset right-sided facial droop, arm weakness, slurred speech/dysarthria, and severe sudden thunderclap headache. Vitals: BP 190/125 mmHg."
+  },
+  {
+    "id": "ACS_01",
+    "presentation": "PATIENT PRESENTATION: 54-year-old male with central retrosternal chest pain radiating to left arm, diaphoretic sweating. Labs: Cardiac Troponin I: 0.85 ng/mL."
+  },
+  {
+    "id": "PE_01",
+    "presentation": "PATIENT PRESENTATION: 42-year-old female complaining of sudden onset dyspnea, sharp pleuritic chest pain. Vitals: HR 115 bpm, SpO2 88%."
+  },
+  {
+    "id": "SEPSIS_01",
+    "presentation": "PATIENT PRESENTATION: 78-year-old nursing home resident presenting with fever 39.1°C, heart rate 105 bpm, altered mental status, and Serum Lactate of 2.5 mmol/L."
+  },
+  {
+    "id": "DKA_01",
+    "presentation": "PATIENT PRESENTATION: 19-year-old male with Blood Glucose of 310 mg/dL, Urine Ketones POSITIVE, Serum Bicarbonate 14 mEq/L, and arterial pH 7.22 with Kussmaul respiration."
+  },
+  {
+    "id": "DHF_01",
+    "presentation": "PATIENT PRESENTATION: 28-year-old female with Dengue NS1 POSITIVE, Platelet Count 45,000 /cu.mm, hematocrit rise of 22%, and severe abdominal pain."
+  },
+  {
+    "id": "AKI_01",
+    "presentation": "PATIENT PRESENTATION: 60-year-old male with rapid rise in Serum Creatinine to 2.1 mg/dL, BUN 35 mg/dL, and oliguria with urine output < 0.5 mL/kg/hr for 6 hours."
+  },
+  {
+    "id": "PANCREATITIS_01",
+    "presentation": "PATIENT PRESENTATION: 45-year-old male presenting with severe epigastric abdominal pain radiating to the back, nausea, and Serum Lipase of 450 U/L."
+  },
+  {
+    "id": "ORGANOPHOSPHATE_01",
+    "presentation": "PATIENT PRESENTATION: 35-year-old agricultural worker with pesticide ingestion presenting with pinpoint pupils, bradycardia, excessive salivation, and bronchorrhea."
+  },
+  {
+    "id": "PARACETAMOL_01",
+    "presentation": "PATIENT PRESENTATION: 22-year-old female presenting with acute ingestion of 12g Paracetamol, 6 hours post-ingestion, with toxic levels on Rumack-Matthew nomogram."
+  },
+  {
+    "id": "SNAKEBITE_01",
+    "presentation": "PATIENT PRESENTATION: 38-year-old male bitten by a viper presenting with local tissue edema, ptosis, and a 20-minute Whole Blood Clotting Test (20WBCT) non-clotting at 25 minutes."
+  },
+  {
+    "id": "BENZODIAZEPINE_01",
+    "presentation": "PATIENT PRESENTATION: 30-year-old female with severe CNS depression, respiratory depression with RR 8/min, SpO2 85%, and history of benzodiazepine ingestion."
+  },
+  {
+    "id": "ANAPHYLAXIS_01",
+    "presentation": "PATIENT PRESENTATION: 31-year-old female presenting with sudden wheezing, laryngeal edema, diffuse urticaria, and hypotension with BP 80/50 mmHg following allergen exposure."
+  },
+  {
+    "id": "TENSION_PNEUMOTHORAX_01",
+    "presentation": "PATIENT PRESENTATION: 30-year-old male post-trauma presenting with acute severe dyspnea, unilateral absent breath sounds on the left, tracheal deviation, and distended neck veins."
+  },
+  {
+    "id": "TRAUMA_01",
+    "presentation": "PATIENT PRESENTATION: 25-year-old male involved in a high-energy road traffic accident with massive traumatic hemorrhage, cold extremities, and BP 80/50 mmHg."
+  },
+  {
+    "id": "CO_POISONING_01",
+    "presentation": "PATIENT PRESENTATION: 40-year-old male pulled from a smoke-filled room presenting with severe headache, confusion, and Carboxyhemoglobin (COHb) level of 28%."
+  },
+  {
+    "id": "COPD_01",
+    "presentation": "PATIENT PRESENTATION: 65-year-old chronic smoker presenting with progressive severe dyspnea, purulent sputum production, wheezing, and SpO2 84% on room air."
+  },
+  {
+    "id": "HEART_FAILURE_01",
+    "presentation": "PATIENT PRESENTATION: 71-year-old female presenting with acute respiratory distress, orthopnea, bilateral pulmonary crackles, pink frothy sputum, and S3 gallop."
+  },
+  {
+    "id": "HYPERTENSIVE_EMERGENCY_01",
+    "presentation": "PATIENT PRESENTATION: 58-year-old male presenting with severe headache, confusion, and blood pressure of 220/130 mmHg indicating acute end-organ damage."
+  },
+  {
+    "id": "CARDIAC_ARREST_01",
+    "presentation": "PATIENT PRESENTATION: 50-year-old unresponsiveness male with absence of normal breathing and absence of central carotid pulse within 10 seconds."
+  },
+  {
+    "id": "RTA_01",
+    "presentation": "PATIENT PRESENTATION: 29-year-old motor vehicle crash victim with multiple long bone fractures, GCS depression, and systolic blood pressure of 85 mmHg."
+  },
+  {
+    "id": "TBI_01",
+    "presentation": "PATIENT PRESENTATION: 34-year-old male with head trauma presenting with a lucid interval followed by rapid neurological deterioration, unilateral blown pupil, and bradycardia."
+  },
+  {
+    "id": "DROWNING_01",
+    "presentation": "PATIENT PRESENTATION: 15-year-old adolescent rescued from liquid submersion presenting with apnea, severe hypoxia with SpO2 80%, and unconsciousness."
+  },
+  {
+    "id": "HEAT_STROKE_01",
+    "presentation": "PATIENT PRESENTATION: 32-year-old construction worker during an extreme heat wave presenting with core body temperature of 41.1°C, anhidrosis, delirium, and seizures."
+  },
+  {
+    "id": "GI_BLEED_01",
+    "presentation": "PATIENT PRESENTATION: 55-year-old patient with liver cirrhosis presenting with massive hematemesis, melena, and hypovolemic shock with BP 85/50 mmHg."
+  },
+  {
+    "id": "HEPATIC_ENCEPHALOPATHY_01",
+    "presentation": "PATIENT PRESENTATION: 50-year-old male with viral hepatitis presenting with jaundice, asterixis flapping tremor, INR 2.2, and confusion."
+  },
+  {
+    "id": "PERFORATED_ULCER_01",
+    "presentation": "PATIENT PRESENTATION: 48-year-old male presenting with sudden severe board-like abdominal rigidity, rebound tenderness, and free air under the diaphragm on X-ray."
+  },
+  {
+    "id": "CHOLERA_01",
+    "presentation": "PATIENT PRESENTATION: 35-year-old male presenting with profuse rice-water watery diarrhea, sunken eyes, severe muscle cramps, and hypovolemic shock with BP 75/40 mmHg."
+  },
+  {
+    "id": "MALARIA_01",
+    "presentation": "PATIENT PRESENTATION: 33-year-old traveler returning from endemic area with positive Plasmodium falciparum RDT, coma, and severe anemia with Hb 4.2 g/dL."
+  },
+  {
+    "id": "RABIES_01",
+    "presentation": "PATIENT PRESENTATION: 27-year-old male bitten by a stray rabid dog 3 weeks ago presenting with hydrophobia, aerophobia, severe agitation, and brainstem dysfunction."
+  }
+]

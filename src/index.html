@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HouseMd AI - Emergency Clinical Decision Support</title>
-    
+
     <!-- Content Security Policy: Authorizes Netlify UI to communicate with Render backend -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https:; connect-src 'self' https://aegismed-ai-engine-3.onrender.com;">
 
@@ -20,7 +20,7 @@
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen p-6 font-sans transition-colors duration-200 flex flex-col justify-between">
 
     <div class="max-w-5xl mx-auto space-y-6 w-full mb-12">
-        
+
         <!-- Header & Theme Controls -->
         <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-slate-200 dark:border-slate-800 pb-4 gap-4">
             <div>
@@ -88,12 +88,27 @@
                 📊 Structured Triage & Diagnostic Output
             </h2>
 
+            <div id="sourceBanner" class="hidden p-3 rounded-lg text-sm font-semibold border bg-amber-50 border-amber-300 text-amber-900 dark:bg-amber-950/60 dark:border-amber-700 dark:text-amber-200"></div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div id="triageBox" class="p-4 rounded-xl font-bold border flex items-center justify-center text-center"></div>
                 <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col justify-center">
-                    <div class="text-xs font-semibold text-slate-400 tracking-wider">PRIMARY DIAGNOSIS</div>
+                    <div id="diagLabel" class="text-xs font-semibold text-slate-400 tracking-wider">PRIMARY DIAGNOSIS</div>
                     <div id="diagName" class="text-lg font-bold text-blue-600 dark:text-blue-400 mt-1"></div>
                 </div>
+            </div>
+
+            <!-- AI guess: separate and unverified -->
+            <div id="aiGuessBox" class="hidden space-y-3 p-4 rounded-xl border-2 border-dashed border-slate-400 dark:border-slate-500 bg-slate-50 dark:bg-slate-900">
+                <h3 class="font-bold text-slate-700 dark:text-slate-300">🤖 AI guess (not verified)</h3>
+                <div id="aiUrgentWarning" class="hidden p-3 rounded-lg font-bold border bg-red-100 border-red-300 text-red-800 dark:bg-red-950/80 dark:border-red-700 dark:text-red-200">
+                    ⚠️ The AI suspects this may be urgent. Seek urgent care now. This is only a guess.
+                </div>
+                <p class="text-sm"><strong>Possible condition:</strong> <span id="aiGuessCondition"></span></p>
+                <p class="text-sm"><strong>AI-estimated urgency:</strong> <span id="aiGuessUrgency" class="px-2 py-0.5 rounded border font-mono text-xs"></span></p>
+                <p id="aiGuessReasoning" class="text-sm text-slate-700 dark:text-slate-300"></p>
+                <ul id="aiGuessSteps" class="list-disc list-inside text-sm text-slate-700 dark:text-slate-300 space-y-1"></ul>
+                <p class="text-xs font-semibold text-slate-500 dark:text-slate-400">This is a guess, not a guarantee. It is not checked against the doctor-verified list and can be wrong.</p>
             </div>
 
             <div>
@@ -119,7 +134,7 @@
     <!-- Professional Enterprise Footer -->
     <footer class="w-full max-w-5xl mx-auto border-t border-slate-200 dark:border-slate-800 pt-8 pb-6 mt-12 text-xs text-slate-500 dark:text-slate-400">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-            
+
             <!-- Column 1: Identification & Copyright -->
             <div class="space-y-1 text-center md:text-left">
                 <p class="font-semibold text-slate-700 dark:text-slate-300">HouseMd AI Clinical Engine</p>
@@ -233,33 +248,61 @@
             }
         }
 
+        function setList(id, items, emptyText) {
+            const ul = document.getElementById(id);
+            ul.replaceChildren();
+            (items && items.length ? items : [emptyText]).forEach(t => {
+                const li = document.createElement("li");
+                li.textContent = t;  // textContent: model output can never inject HTML
+                ul.appendChild(li);
+            });
+        }
+
         function renderResults(data) {
             document.getElementById("results").classList.remove("hidden");
-            
-            const primary = typeof data.primary_diagnosis === 'object' ? data.primary_diagnosis : {};
-            const condition = primary.condition_name || data.primary_diagnosis || "N/A";
-            const level = primary.triage_level || data.triage_level || "UNKNOWN";
-            
+            const primary = (data.primary_diagnosis && typeof data.primary_diagnosis === "object") ? data.primary_diagnosis : {};
+            const level = primary.triage_level || "UNDETERMINED";
+            const source = data.source || "";
+
+            const GREY = "bg-slate-200 border-slate-400 text-slate-800 dark:bg-slate-700 dark:border-slate-500 dark:text-slate-100";
+            const RED = "bg-red-100 border-red-300 text-red-800 dark:bg-red-950/80 dark:border-red-700 dark:text-red-200";
+            const AMBER = "bg-amber-100 border-amber-300 text-amber-800 dark:bg-amber-950/80 dark:border-amber-700 dark:text-amber-200";
+            const GREEN = "bg-emerald-100 border-emerald-300 text-emerald-800 dark:bg-emerald-950/80 dark:border-emerald-700 dark:text-emerald-200";
+
+            // Grey is the default: "not sure" or "nothing listed" must never look like "safe".
+            let cls = GREY, label = "❔ NOT SURE: MANUAL TRIAGE REQUIRED";
+            if (source === "no_match") label = "🔎 NO LISTED EMERGENCY DETECTED";
+            else if (level === "CRITICAL_EMERGENCY") { cls = RED; label = "🚨 TRIAGE LEVEL: CRITICAL_EMERGENCY"; }
+            else if (level === "HIGH_PRIORITY") { cls = AMBER; label = "⚠️ TRIAGE LEVEL: HIGH_PRIORITY"; }
+            else if (level === "STABLE") { cls = GREEN; label = "🟢 TRIAGE LEVEL: STABLE"; }
+
             const triageBox = document.getElementById("triageBox");
-            if (level === "CRITICAL_EMERGENCY") {
-                triageBox.className = "p-4 rounded-xl font-bold border bg-red-100 border-red-300 text-red-800 dark:bg-red-950/80 dark:border-red-700 dark:text-red-200";
-                triageBox.innerText = `🚨 TRIAGE LEVEL: ${level}`;
-            } else if (level === "HIGH_PRIORITY") {
-                triageBox.className = "p-4 rounded-xl font-bold border bg-amber-100 border-amber-300 text-amber-800 dark:bg-amber-950/80 dark:border-amber-700 dark:text-amber-200";
-                triageBox.innerText = `⚠️ TRIAGE LEVEL: ${level}`;
-            } else {
-                triageBox.className = "p-4 rounded-xl font-bold border bg-emerald-100 border-emerald-300 text-emerald-800 dark:bg-emerald-950/80 dark:border-emerald-700 dark:text-emerald-200";
-                triageBox.innerText = `🟢 TRIAGE LEVEL: ${level}`;
-            }
+            triageBox.className = "p-4 rounded-xl font-bold border flex items-center justify-center text-center " + cls;
+            triageBox.innerText = label;
+            document.getElementById("diagLabel").innerText = (source === "no_match" || source === "unavailable") ? "RESULT" : "PRIMARY DIAGNOSIS";
 
-            document.getElementById("diagName").innerText = condition;
+            const banner = document.getElementById("sourceBanner");
+            if (data.notice) { banner.innerText = data.notice; banner.classList.remove("hidden"); }
+            else { banner.classList.add("hidden"); }
+
+            // The AI guess has its own box and never replaces the headline above.
+            const guess = data.ai_guess, box = document.getElementById("aiGuessBox");
+            if (guess) {
+                box.classList.remove("hidden");
+                document.getElementById("aiUrgentWarning").classList.toggle("hidden", !guess.suspects_urgent);
+                document.getElementById("aiGuessCondition").innerText = guess.possible_condition || "Not Sure";
+                const gl = guess.estimated_urgency || "UNDETERMINED", chip = document.getElementById("aiGuessUrgency");
+                chip.innerText = gl;
+                chip.className = "px-2 py-0.5 rounded border font-mono text-xs " + (guess.suspects_urgent ? (gl === "CRITICAL_EMERGENCY" ? RED : AMBER) : GREY);
+                document.getElementById("aiGuessReasoning").innerText = guess.reasoning || "";
+                setList("aiGuessSteps", guess.suggested_steps, "No specific steps suggested.");
+            } else { box.classList.add("hidden"); }
+
+            document.getElementById("diagName").innerText = primary.condition_name || "Not Sure";
             document.getElementById("summaryText").innerText = data.patient_summary || "N/A";
-            
-            const actionsList = document.getElementById("actionsList");
-            actionsList.innerHTML = (data.immediate_emergency_actions || []).map(a => `<li>${a}</li>`).join("") || "<li>None specified</li>";
-
-            document.getElementById("justificationText").innerText = primary.clinical_justification || data.clinical_justification || "N/A";
-            document.getElementById("guidelineText").innerText = primary.reference_guideline || data.reference_guideline || "N/A";
+            setList("actionsList", data.immediate_emergency_actions, "None specified");
+            document.getElementById("justificationText").innerText = primary.clinical_justification || "N/A";
+            document.getElementById("guidelineText").innerText = (data.reference_guidelines || []).join("; ") || primary.reference_guideline || "N/A";
         }
     </script>
 </body>
