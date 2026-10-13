@@ -97,4 +97,4 @@ class AegisMedAuditResponse(LLMAuditOutput):
     grounded: bool = True
     reference_guidelines: List[str] = Field(default_factory=list)
     notice: Optional[str] = None
-    ai_guess: Optional[AIGuess] = Noned
+    ai_guess: Optional[AIGuess] = None
