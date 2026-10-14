@@ -14,3 +14,9 @@ __pycache__/
 # IDE Configuration
 .vscode/
 .idea/
+
+# Evaluation outputs and local tool settings
+.deepeval/
+.env.local
+eval_*.json
+hhem_results.json
