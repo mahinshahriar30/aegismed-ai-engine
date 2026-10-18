@@ -79,6 +79,14 @@ class LLMAuditOutput(BaseModel):
     )
 
 
+class AlternativeCondition(BaseModel):
+    """Another condition on the verified list that also matched the note. It comes from the database, not the AI."""
+
+    condition_name: str
+    triage_level: TriageLevel
+    reference_guideline: str
+
+
 class AIGuess(BaseModel):
     """A rough AI guess for notes that match nothing on the verified list. It is NOT verified."""
 
@@ -98,3 +106,4 @@ class AegisMedAuditResponse(LLMAuditOutput):
     reference_guidelines: List[str] = Field(default_factory=list)
     notice: Optional[str] = None
     ai_guess: Optional[AIGuess] = None
+    alternatives: List[AlternativeCondition] = Field(default_factory=list)

@@ -37,6 +37,7 @@ The API is designed to always return a valid answer: provider outages, malformed
 - 🔎 **Hybrid retrieval:** Vector search (ChromaDB) combined with a keyword check over each guideline's diagnostic criteria, because short symptom notes match long protocol text poorly with embeddings alone.
 - 🛟 **Graceful degradation:** AI models down → database result. No match → "No listed emergency detected" (never an all-clear). Never a crash.
 - 🧾 **Traceable references:** The guideline titles shown to the user are added by code from what was actually retrieved.
+- 🔀 **Possible alternative conditions:** If more than one condition on the verified list matches a note, the top match is the headline and the others are listed in a separate section at the bottom of the page. They come straight from the guideline list, not from the AI.
 - 🛡️ **Multi-model failover:** Tries `openai/gpt-oss-20b`, `llama-3.3-70b-versatile` and `llama-3.1-8b-instant` on Groq in order; a model only counts as successful if its output parses and validates. Gemini models can be added to the cascade.
 - 📋 **Strict typing:** Pydantic schema (`AegisMedAuditResponse`) with a `CRITICAL_EMERGENCY` / `HIGH_PRIORITY` / `STABLE` / `UNDETERMINED` triage enum.
 - 🔒 **Secured API:** `X-API-Key` header (constant-time comparison, no default key), restricted CORS origin, request length limit.
@@ -87,6 +88,8 @@ Matched guidelines are ranked first, then ordered by combining the distance rank
 | `database_fallback` | A guideline matched but every AI model failed. Result read directly from the database. |
 | `no_match` | No condition on the verified list matched. The headline is "No listed emergency detected" (triage `UNDETERMINED`) and `notice` carries the safety line. `ai_guess` holds the separate, unverified AI guess, or is empty when the AI is unavailable or switched off. |
 | `unavailable` | The verified list could not be checked (database error or still loading), so the answer is "Not Sure" / `UNDETERMINED`. This is never shown as "no emergency". |
+
+The response also has an `alternatives` list: other conditions on the verified list that matched the same note (condition, triage level and guideline name, read from the database, never written by the AI). It is empty when only one condition matched.
 
 ---
 

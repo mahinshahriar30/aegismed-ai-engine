@@ -13,6 +13,7 @@ from src.database import Hit, retrieve
 from src.schema import (
     AIGuess,
     AegisMedAuditResponse,
+    AlternativeCondition,
     DiagnosisItem,
     LLMAuditOutput,
     TriageLevel,
@@ -101,7 +102,19 @@ def build_no_match_response(guess: Optional[AIGuess] = None) -> AegisMedAuditRes
     )
 
 
-def _database_fallback_response(hit: Hit) -> AegisMedAuditResponse:
+def _alternatives(hits: List[Hit]) -> List[AlternativeCondition]:
+    """Other matched guidelines after the top one, read straight from the verified list (not written by the AI)."""
+    return [
+        AlternativeCondition(
+            condition_name=h.condition_name or h.title,
+            triage_level=normalize_triage(h.triage_raw),
+            reference_guideline=h.title,
+        )
+        for h in hits[1:]
+    ]
+
+
+def _database_fallback_response(hit: Hit, alternatives: Optional[List[AlternativeCondition]] = None) -> AegisMedAuditResponse:
     """AI is down but a guideline matched: show its condition name and triage level."""
     title = hit.title
     return AegisMedAuditResponse(
@@ -122,10 +135,16 @@ def _database_fallback_response(hit: Hit) -> AegisMedAuditResponse:
         grounded=True,
         reference_guidelines=[title],
         notice=NOTICE_DB_FALLBACK,
+        alternatives=alternatives or [],
     )
 
 
-def _from_llm(llm: LLMAuditOutput, titles: List[str], top_hit: Hit) -> AegisMedAuditResponse:
+def _from_llm(
+    llm: LLMAuditOutput,
+    titles: List[str],
+    top_hit: Hit,
+    alternatives: Optional[List[AlternativeCondition]] = None,
+) -> AegisMedAuditResponse:
     """
     Wraps validated LLM output. The condition name, triage level and reference guidelines come
     from the database (the top ChromaDB match), not from the LLM, which only supplies the
@@ -147,6 +166,7 @@ def _from_llm(llm: LLMAuditOutput, titles: List[str], top_hit: Hit) -> AegisMedA
         grounded=True,
         reference_guidelines=titles,
         notice=None,
+        alternatives=alternatives or [],
     )
 
 
@@ -299,10 +319,15 @@ def _diagnose(document_text: str) -> AegisMedAuditResponse:
     if grounded_hits:
         llm = generate_llm_audit(_grounded_prompt(document_text, grounded_hits))
         if llm:
-            return _from_llm(llm, titles=[h.title for h in grounded_hits], top_hit=grounded_hits[0])
+            return _from_llm(
+                llm,
+                titles=[h.title for h in grounded_hits],
+                top_hit=grounded_hits[0],
+                alternatives=_alternatives(grounded_hits),
+            )
         # STEP 3: all AI models failed -> answer straight from the database
         logger.warning("All LLMs failed; using database fallback for '%s'", grounded_hits[0].title)
-        return _database_fallback_response(grounded_hits[0])
+        return _database_fallback_response(grounded_hits[0], _alternatives(grounded_hits))
 
     # STEP 2b: nothing on the verified list matched
     if not (kb_ok and hits):
