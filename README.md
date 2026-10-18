@@ -373,4 +373,4 @@ The default thresholds were calibrated on the five sample cases in the web app p
 
 ## 📜 License
 
-Copyright (c) 2026 Mahin Shahriar. All rights reserved.
+Copyright (c) 2026 . All rights reserved.
